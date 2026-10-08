@@ -1,0 +1,813 @@
+{
+ "rows": [
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 4621.490299992729,
+   "first_tts_end_ms": 5451.557299995329,
+   "last_play_end_ms": 8589.16559998761,
+   "gaps_ms": [],
+   "reply_audio_s": 3.1373242630385487,
+   "q": 1,
+   "text": "what is the capital of france",
+   "reply": "The capital city of France is Paris.",
+   "tokens": 8,
+   "endpoint_wait_ms": 1160.5874999950174,
+   "final_accept_ms": 12.115300007280894,
+   "result_ms": 1.0077000042656437,
+   "speech_end_to_text_ms": 1173.7316000071587,
+   "text_to_first_token_ms": 3265.2147999906447,
+   "llm_total_ms": 4621.155500004534,
+   "llm_prefill_ms": 3265.167499994277,
+   "decode_tok_s": 5.16228757182737,
+   "tts_ms": 830.0670000026003,
+   "text_to_first_audio_ms": 5451.714899987564,
+   "speech_end_to_first_audio_ms": 6625.446499994723,
+   "win": [
+    73943.827956,
+    73952.4302657
+   ],
+   "prompt_chars": 119,
+   "audio_s": 3.1373242630385487,
+   "sample_rate": 22050,
+   "prompt_tokens": 34,
+   "n_past": 42,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.593886802063233,
+   "peak_proc_pct_of_cpu": 46.61572335052694,
+   "peak_sys_cpu_pct": 88.09523809523809,
+   "peak_ws_mb": 2692.26171875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 6305.580699990969,
+   "first_tts_end_ms": 7002.996700000949,
+   "last_play_end_ms": 9293.03030000301,
+   "gaps_ms": [],
+   "reply_audio_s": 2.289795918367347,
+   "q": 2,
+   "text": "how many days are there in a week",
+   "reply": "There are seven days in a week.",
+   "tokens": 8,
+   "endpoint_wait_ms": 954.0134999988368,
+   "final_accept_ms": 12.272100007976405,
+   "result_ms": 0.6855000101495534,
+   "speech_end_to_text_ms": 966.977100004442,
+   "text_to_first_token_ms": 4915.588899995782,
+   "llm_total_ms": 6305.263200003537,
+   "llm_prefill_ms": 4915.543600000092,
+   "decode_tok_s": 5.036987317429102,
+   "tts_ms": 697.41600000998,
+   "text_to_first_audio_ms": 7003.136400002404,
+   "speech_end_to_first_audio_ms": 7970.113500006846,
+   "win": [
+    73957.827882,
+    73967.1338759
+   ],
+   "prompt_chars": 202,
+   "audio_s": 2.289795918367347,
+   "sample_rate": 22050,
+   "prompt_tokens": 56,
+   "n_past": 64,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.608494201242066,
+   "peak_proc_pct_of_cpu": 46.73745167701722,
+   "peak_sys_cpu_pct": 88.88888888888889,
+   "peak_ws_mb": 2701.48046875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 7611.5231000003405,
+   "first_tts_end_ms": 8606.23960000521,
+   "last_play_end_ms": 14138.518100007786,
+   "gaps_ms": [],
+   "reply_audio_s": 5.531609977324263,
+   "q": 3,
+   "text": "tell media short joke",
+   "reply": "Why did the scarecrow win an award? Because he was outstanding in his field!",
+   "tokens": 18,
+   "endpoint_wait_ms": 1189.59910000558,
+   "final_accept_ms": 10.611399993649684,
+   "result_ms": 0.701400000252761,
+   "speech_end_to_text_ms": 1200.9170999954222,
+   "text_to_first_token_ms": 4570.283799999743,
+   "llm_total_ms": 7611.107600008836,
+   "llm_prefill_ms": 4570.239900000161,
+   "decode_tok_s": 5.590509577233991,
+   "tts_ms": 994.7165000048699,
+   "text_to_first_audio_ms": 8606.394800008275,
+   "speech_end_to_first_audio_ms": 9807.311900003697,
+   "win": [
+    73972.8280301,
+    73986.9778662
+   ],
+   "prompt_chars": 189,
+   "audio_s": 5.531609977324263,
+   "sample_rate": 22050,
+   "prompt_tokens": 53,
+   "n_past": 71,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.60777851211229,
+   "peak_proc_pct_of_cpu": 46.73148760093576,
+   "peak_sys_cpu_pct": 87.5,
+   "peak_ws_mb": 2707.6171875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 8112.062900007004,
+   "first_tts_end_ms": 9108.843699999852,
+   "last_play_end_ms": 13929.952600010438,
+   "gaps_ms": [],
+   "reply_audio_s": 4.820770975056689,
+   "q": 4,
+   "text": "why is the sky blue",
+   "reply": "The sky appears blue because of the way Earth's atmosphere scatters sunlight.",
+   "tokens": 17,
+   "endpoint_wait_ms": 1153.1571000086842,
+   "final_accept_ms": 10.491599998204038,
+   "result_ms": 0.6920999876456335,
+   "speech_end_to_text_ms": 1164.3450999981724,
+   "text_to_first_token_ms": 5260.3802000085125,
+   "llm_total_ms": 8111.731500001042,
+   "llm_prefill_ms": 5260.336499995901,
+   "decode_tok_s": 5.6112885096491905,
+   "tts_ms": 996.7807999928482,
+   "text_to_first_audio_ms": 9109.015800000634,
+   "speech_end_to_first_audio_ms": 10273.360899998806,
+   "win": [
+    73992.3279631,
+    74006.2691037
+   ],
+   "prompt_chars": 220,
+   "audio_s": 4.820770975056689,
+   "sample_rate": 22050,
+   "prompt_tokens": 60,
+   "n_past": 77,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.609327539182062,
+   "peak_proc_pct_of_cpu": 46.74439615985052,
+   "peak_sys_cpu_pct": 89.28571428571429,
+   "peak_ws_mb": 2711.7578125,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 7292.039799998747,
+   "first_tts_end_ms": 8142.519700006233,
+   "last_play_end_ms": 11965.067800003453,
+   "gaps_ms": [],
+   "reply_audio_s": 3.822312925170068,
+   "q": 5,
+   "text": "who wrote the play romeo and juliet",
+   "reply": "William Shakespeare wrote the play Romeo and Juliet.",
+   "tokens": 9,
+   "endpoint_wait_ms": 1372.325100004673,
+   "final_accept_ms": 12.740399994072504,
+   "result_ms": 0.553100006072782,
+   "speech_end_to_text_ms": 1385.6242000038037,
+   "text_to_first_token_ms": 5729.529500007629,
+   "llm_total_ms": 7291.664799995488,
+   "llm_prefill_ms": 5729.485500007286,
+   "decode_tok_s": 5.121051085531872,
+   "tts_ms": 850.4799000074854,
+   "text_to_first_audio_ms": 8142.686399995,
+   "speech_end_to_first_audio_ms": 9528.310599998804,
+   "win": [
+    74012.8283811,
+    74024.806748
+   ],
+   "prompt_chars": 235,
+   "audio_s": 3.822312925170068,
+   "sample_rate": 22050,
+   "prompt_tokens": 66,
+   "n_past": 75,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.60104433322378,
+   "peak_proc_pct_of_cpu": 46.6753694435315,
+   "peak_sys_cpu_pct": 92.7710843373494,
+   "peak_ws_mb": 2718.546875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 15008.044100002735,
+   "first_tts_end_ms": 17309.397099990747,
+   "last_play_end_ms": 34265.91190000181,
+   "gaps_ms": [],
+   "reply_audio_s": 16.95582766439909,
+   "q": 6,
+   "text": "explain how a rainbow forms",
+   "reply": "A rainbow is formed when sunlight interacts with moisture in the atmosphere, such as after a rain shower. The light is refracted (bent) as it enters the water droplet, causing it to split into its component colors - red, orange, yellow, green, blue, indigo,",
+   "tokens": 60,
+   "endpoint_wait_ms": 1076.3412000087555,
+   "final_accept_ms": 14.140100000076927,
+   "result_ms": 0.6831000064266846,
+   "speech_end_to_text_ms": 1091.1696000111988,
+   "text_to_first_token_ms": 5075.110299992957,
+   "llm_total_ms": 15007.668899997952,
+   "llm_prefill_ms": 5075.065099998028,
+   "decode_tok_s": 5.940033569042636,
+   "tts_ms": 2301.352999988012,
+   "text_to_first_audio_ms": 17309.55969999195,
+   "speech_end_to_first_audio_ms": 18400.72930000315,
+   "win": [
+    74030.8284597,
+    74065.1092
+   ],
+   "prompt_chars": 218,
+   "audio_s": 16.95582766439909,
+   "sample_rate": 22050,
+   "prompt_tokens": 58,
+   "n_past": 118,
+   "ends_sentence": false,
+   "peak_proc_cores": 5.605297380257106,
+   "peak_proc_pct_of_cpu": 46.71081150214255,
+   "peak_sys_cpu_pct": 100.0,
+   "peak_ws_mb": 2721.8125,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 20771.53470000485,
+   "first_tts_end_ms": 23077.28080000379,
+   "last_play_end_ms": 43178.73200000031,
+   "gaps_ms": [],
+   "reply_audio_s": 20.101043083900226,
+   "q": 7,
+   "text": "give me three tips for studying",
+   "reply": "1. Break down your study time into manageable chunks by setting aside specific times each day or week to work on your studies. 2. Use a planner or calendar to keep track of important dates and deadlines. 3. Make use of resources such as textbooks, online tutorials",
+   "tokens": 60,
+   "endpoint_wait_ms": 1174.6342000114964,
+   "final_accept_ms": 12.144899999839254,
+   "result_ms": 0.7435000006807968,
+   "speech_end_to_text_ms": 1187.528000009479,
+   "text_to_first_token_ms": 9672.078999996302,
+   "llm_total_ms": 20771.050900002592,
+   "llm_prefill_ms": 9672.018600002048,
+   "decode_tok_s": 5.315778745863917,
+   "tts_ms": 2305.7460999989416,
+   "text_to_first_audio_ms": 23077.432399993995,
+   "speech_end_to_first_audio_ms": 24264.960400003474,
+   "win": [
+    74071.3279402,
+    74114.519566
+   ],
+   "prompt_chars": 419,
+   "audio_s": 20.101043083900226,
+   "sample_rate": 22050,
+   "prompt_tokens": 104,
+   "n_past": 164,
+   "ends_sentence": false,
+   "peak_proc_cores": 5.604984599784085,
+   "peak_proc_pct_of_cpu": 46.708204998200706,
+   "peak_sys_cpu_pct": 100.0,
+   "peak_ws_mb": 2731.3671875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 14893.698500003666,
+   "first_tts_end_ms": 16511.653099994874,
+   "last_play_end_ms": 28008.705300002475,
+   "gaps_ms": [],
+   "reply_audio_s": 11.496507936507937,
+   "q": 8,
+   "text": "what is photosynthesis",
+   "reply": "Photosynthesis is the process through which plants, algae, and some bacteria convert light energy from the sun into chemical energy in the form of organic compounds, such as glucose.",
+   "tokens": 35,
+   "endpoint_wait_ms": 1507.4010999960592,
+   "final_accept_ms": 11.875199998030439,
+   "result_ms": 0.8527000027243048,
+   "speech_end_to_text_ms": 1520.1412000023993,
+   "text_to_first_token_ms": 9067.842999997083,
+   "llm_total_ms": 14893.338900001254,
+   "llm_prefill_ms": 9067.799199998262,
+   "decode_tok_s": 5.83636911786603,
+   "tts_ms": 1617.954599991208,
+   "text_to_first_audio_ms": 16511.802900000475,
+   "speech_end_to_first_audio_ms": 18031.944100002875,
+   "win": [
+    74120.3278321,
+    74148.3492775
+   ],
+   "prompt_chars": 421,
+   "audio_s": 11.496507936507937,
+   "sample_rate": 22050,
+   "prompt_tokens": 104,
+   "n_past": 139,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.607789693439223,
+   "peak_proc_pct_of_cpu": 46.731580778660195,
+   "peak_sys_cpu_pct": 98.80952380952381,
+   "peak_ws_mb": 2734.81640625,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  }
+ ],
+ "overall_peak_ws_mb": 2734.81640625,
+ "overall_peak_private_mb": 1929.26171875,
+ "gpu_all_max_util": 0,
+ "gpu_all_max_mem_mib": 0,
+ "gpu_samples": 229,
+ "loads": {
+  "vosk_load_start": 1,
+  "llm_load_start": 1
+ },
+ "llm_info": {
+  "name": "llm_info",
+  "t": 73931.5863463,
+  "threads": 5,
+  "device": "None",
+  "kwargs": "{'model_name': 'orca-mini-3b-gguf2-q4_0.gguf', 'model_path': 'D:\\\\Hacknex\\\\The offical hacknex\\\\ABLE - Adaptive voice - Based Local Engine\\\\baselines\\\\lumo\\\\models\\\\llm', 'allow_download': False, 'n_threads': 5}"
+ },
+ "gen_kwargs": "{'max_tokens': 60, 'n_batch': 128}",
+ "startup_s": 9.05648860000656,
+ "events": [
+  {
+   "name": "start",
+   "t": 73930.6237157
+  },
+  {
+   "name": "vosk_load_start",
+   "t": 73930.6381003
+  },
+  {
+   "name": "vosk_load_end",
+   "t": 73931.0867416
+  },
+  {
+   "name": "llm_load_start",
+   "t": 73931.2255133
+  },
+  {
+   "name": "llm_load_end",
+   "t": 73931.5863217
+  },
+  {
+   "name": "llm_info",
+   "t": 73931.5863463,
+   "threads": 5,
+   "device": "None",
+   "kwargs": "{'model_name': 'orca-mini-3b-gguf2-q4_0.gguf', 'model_path': 'D:\\\\Hacknex\\\\The offical hacknex\\\\ABLE - Adaptive voice - Based Local Engine\\\\baselines\\\\lumo\\\\models\\\\llm', 'allow_download': False, 'n_threads': 5}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73931.5867357
+  },
+  {
+   "name": "tts_end",
+   "t": 73932.6322821
+  },
+  {
+   "name": "play",
+   "t": 73932.6325746,
+   "audio_s": 5.894149659863945,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73938.5270693
+  },
+  {
+   "name": "stream_open",
+   "t": 73939.3274714
+  },
+  {
+   "name": "speech_end",
+   "t": 73942.6673685,
+   "q": 0
+  },
+  {
+   "name": "accept_true",
+   "t": 73943.8400713,
+   "t0": 73943.827956
+  },
+  {
+   "name": "result",
+   "t": 73943.8411001,
+   "t0": 73943.8400924,
+   "text": "what is the capital of france"
+  },
+  {
+   "name": "llm_start",
+   "t": 73943.8411474,
+   "prompt_chars": 119
+  },
+  {
+   "name": "first_token",
+   "t": 73947.1063149
+  },
+  {
+   "name": "llm_end",
+   "t": 73948.4623029,
+   "tokens": 8,
+   "reply": " The capital city of France is Paris.",
+   "prompt_tokens": 34,
+   "n_past": 42,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73948.4625904
+  },
+  {
+   "name": "tts_end",
+   "t": 73949.2926574
+  },
+  {
+   "name": "play",
+   "t": 73949.292815,
+   "audio_s": 3.1373242630385487,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73952.4302657
+  },
+  {
+   "name": "speech_end",
+   "t": 73956.8738685,
+   "q": 1
+  },
+  {
+   "name": "accept_true",
+   "t": 73957.8401541,
+   "t0": 73957.827882
+  },
+  {
+   "name": "result",
+   "t": 73957.8408456,
+   "t0": 73957.8401601,
+   "text": "how many days are there in a week"
+  },
+  {
+   "name": "llm_start",
+   "t": 73957.8408909,
+   "prompt_chars": 202
+  },
+  {
+   "name": "first_token",
+   "t": 73962.7564345
+  },
+  {
+   "name": "llm_end",
+   "t": 73964.1461541,
+   "tokens": 8,
+   "reply": " There are seven days in a week.",
+   "prompt_tokens": 56,
+   "n_past": 64,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73964.1464263
+  },
+  {
+   "name": "tts_end",
+   "t": 73964.8438423
+  },
+  {
+   "name": "play",
+   "t": 73964.843982,
+   "audio_s": 2.289795918367347,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73967.1338759
+  },
+  {
+   "name": "speech_end",
+   "t": 73971.638431,
+   "q": 2
+  },
+  {
+   "name": "accept_true",
+   "t": 73972.8386415,
+   "t0": 73972.8280301
+  },
+  {
+   "name": "result",
+   "t": 73972.8393481,
+   "t0": 73972.8386467,
+   "text": "tell media short joke"
+  },
+  {
+   "name": "llm_start",
+   "t": 73972.839392,
+   "prompt_chars": 189
+  },
+  {
+   "name": "first_token",
+   "t": 73977.4096319
+  },
+  {
+   "name": "llm_end",
+   "t": 73980.4504996,
+   "tokens": 18,
+   "reply": " Why did the scarecrow win an award? Because he was outstanding in his field!",
+   "prompt_tokens": 53,
+   "n_past": 71,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73980.4508712
+  },
+  {
+   "name": "tts_end",
+   "t": 73981.4455877
+  },
+  {
+   "name": "play",
+   "t": 73981.4457429,
+   "audio_s": 5.531609977324263,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73986.9778662
+  },
+  {
+   "name": "speech_end",
+   "t": 73991.174806,
+   "q": 3
+  },
+  {
+   "name": "accept_true",
+   "t": 73992.3384547,
+   "t0": 73992.3279631
+  },
+  {
+   "name": "result",
+   "t": 73992.3391511,
+   "t0": 73992.338459,
+   "text": "why is the sky blue"
+  },
+  {
+   "name": "llm_start",
+   "t": 73992.3391948,
+   "prompt_chars": 220
+  },
+  {
+   "name": "first_token",
+   "t": 73997.5995313
+  },
+  {
+   "name": "llm_end",
+   "t": 74000.4509263,
+   "tokens": 17,
+   "reply": " The sky appears blue because of the way Earth's atmosphere scatters sunlight.",
+   "prompt_tokens": 60,
+   "n_past": 77,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 74000.451214
+  },
+  {
+   "name": "tts_end",
+   "t": 74001.4479948
+  },
+  {
+   "name": "play",
+   "t": 74001.4481669,
+   "audio_s": 4.820770975056689,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 74006.2691037
+  },
+  {
+   "name": "speech_end",
+   "t": 74011.456056,
+   "q": 4
+  },
+  {
+   "name": "accept_true",
+   "t": 74012.8411215,
+   "t0": 74012.8283811
+  },
+  {
+   "name": "result",
+   "t": 74012.8416802,
+   "t0": 74012.8411271,
+   "text": "who wrote the play romeo and juliet"
+  },
+  {
+   "name": "llm_start",
+   "t": 74012.8417242,
+   "prompt_chars": 235
+  },
+  {
+   "name": "first_token",
+   "t": 74018.5712097
+  },
+  {
+   "name": "llm_end",
+   "t": 74020.133389,
+   "tokens": 9,
+   "reply": " William Shakespeare wrote the play Romeo and Juliet.",
+   "prompt_tokens": 66,
+   "n_past": 75,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 74020.13372
+  },
+  {
+   "name": "tts_end",
+   "t": 74020.9841999
+  },
+  {
+   "name": "play",
+   "t": 74020.9843666,
+   "audio_s": 3.822312925170068,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 74024.806748
+  },
+  {
+   "name": "speech_end",
+   "t": 74029.7521185,
+   "q": 5
+  },
+  {
+   "name": "accept_true",
+   "t": 74030.8425998,
+   "t0": 74030.8284597
+  },
+  {
+   "name": "result",
+   "t": 74030.8432881,
+   "t0": 74030.842605,
+   "text": "explain how a rainbow forms"
+  },
+  {
+   "name": "llm_start",
+   "t": 74030.8433333,
+   "prompt_chars": 218
+  },
+  {
+   "name": "first_token",
+   "t": 74035.9183984
+  },
+  {
+   "name": "llm_end",
+   "t": 74045.8510022,
+   "tokens": 60,
+   "reply": " A rainbow is formed when sunlight interacts with moisture in the atmosphere, such as after a rain shower. The light is refracted (bent) as it enters the water droplet, causing it to split into its component colors - red, orange, yellow, green, blue, indigo,",
+   "prompt_tokens": 58,
+   "n_past": 118,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 74045.8513322
+  },
+  {
+   "name": "tts_end",
+   "t": 74048.1526852
+  },
+  {
+   "name": "play",
+   "t": 74048.1528478,
+   "audio_s": 16.95582766439909,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 74065.1092
+  },
+  {
+   "name": "speech_end",
+   "t": 74070.153306,
+   "q": 6
+  },
+  {
+   "name": "accept_true",
+   "t": 74071.3400851,
+   "t0": 74071.3279402
+  },
+  {
+   "name": "result",
+   "t": 74071.340834,
+   "t0": 74071.3400905,
+   "text": "give me three tips for studying"
+  },
+  {
+   "name": "llm_start",
+   "t": 74071.3408944,
+   "prompt_chars": 419
+  },
+  {
+   "name": "first_token",
+   "t": 74081.012913
+  },
+  {
+   "name": "llm_end",
+   "t": 74092.1119453,
+   "tokens": 60,
+   "reply": " 1. Break down your study time into manageable chunks by setting aside specific times each day or week to work on your studies. 2. Use a planner or calendar to keep track of important dates and deadlines. 3. Make use of resources such as textbooks, online tutorials",
+   "prompt_tokens": 104,
+   "n_past": 164,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 74092.1123687
+  },
+  {
+   "name": "tts_end",
+   "t": 74094.4181148
+  },
+  {
+   "name": "play",
+   "t": 74094.4182664,
+   "audio_s": 20.101043083900226,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 74114.519566
+  },
+  {
+   "name": "speech_end",
+   "t": 74118.820431,
+   "q": 7
+  },
+  {
+   "name": "accept_true",
+   "t": 74120.3397073,
+   "t0": 74120.3278321
+  },
+  {
+   "name": "result",
+   "t": 74120.3405722,
+   "t0": 74120.3397195,
+   "text": "what is photosynthesis"
+  },
+  {
+   "name": "llm_start",
+   "t": 74120.340616,
+   "prompt_chars": 421
+  },
+  {
+   "name": "first_token",
+   "t": 74129.4084152
+  },
+  {
+   "name": "llm_end",
+   "t": 74135.2339549,
+   "tokens": 35,
+   "reply": " Photosynthesis is the process through which plants, algae, and some bacteria convert light energy from the sun into chemical energy in the form of organic compounds, such as glucose.",
+   "prompt_tokens": 104,
+   "n_past": 139,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 74135.2342707
+  },
+  {
+   "name": "tts_end",
+   "t": 74136.8522253
+  },
+  {
+   "name": "play",
+   "t": 74136.8523751,
+   "audio_s": 11.496507936507937,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 74148.3492775
+  }
+ ],
+ "target": "v1",
+ "label": "e3_off",
+ "tuning": "{\"n_batch\": 128, \"n_threads\": 5, \"history_turns\": 3, \"max_tokens\": 60, \"prompt_style\": \"short\", \"stream\": false}",
+ "cpu_threads_logical": 12
+}

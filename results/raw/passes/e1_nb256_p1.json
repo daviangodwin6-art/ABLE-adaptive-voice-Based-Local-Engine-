@@ -1,0 +1,478 @@
+{
+ "rows": [
+  {
+   "q": 1,
+   "text": "what is the capital of france",
+   "reply": "The capital city of France is Paris.",
+   "tokens": 8,
+   "endpoint_wait_ms": 1160.8455999958096,
+   "final_accept_ms": 10.754399991128594,
+   "result_ms": 0.9267000132240355,
+   "speech_end_to_text_ms": 1172.5341999990633,
+   "text_to_first_token_ms": 4630.516399993212,
+   "llm_total_ms": 5940.729399997508,
+   "llm_prefill_ms": 4630.467199996929,
+   "decode_tok_s": 5.342442146310032,
+   "tts_ms": 716.595599995344,
+   "text_to_first_audio_ms": 6657.782499998575,
+   "speech_end_to_first_audio_ms": 7830.316699997638,
+   "win": [
+    70233.9078614,
+    70240.5773325
+   ],
+   "prompt_chars": 168,
+   "audio_s": 3.1373242630385487,
+   "sample_rate": 22050,
+   "prompt_tokens": 51,
+   "n_past": 59,
+   "ends_sentence": true,
+   "peak_proc_cores": 4.5077555784987045,
+   "peak_proc_pct_of_cpu": 37.56462982082254,
+   "peak_sys_cpu_pct": 73.80952380952381,
+   "peak_ws_mb": 2694.34765625,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "q": 2,
+   "text": "how many days are there in a week",
+   "reply": "There are seven days in a week.",
+   "tokens": 8,
+   "endpoint_wait_ms": 954.0452999935951,
+   "final_accept_ms": 17.623299994738773,
+   "result_ms": 0.6491999956779182,
+   "speech_end_to_text_ms": 972.3242999898503,
+   "text_to_first_token_ms": 6114.73250000563,
+   "llm_total_ms": 7438.091500007431,
+   "llm_prefill_ms": 6114.685200009262,
+   "decode_tok_s": 5.289380895352913,
+   "tts_ms": 677.8477000043495,
+   "text_to_first_audio_ms": 8116.38020000828,
+   "speech_end_to_first_audio_ms": 9088.70449999813,
+   "win": [
+    70246.4075611,
+    70254.5422203
+   ],
+   "prompt_chars": 251,
+   "audio_s": 2.347845804988662,
+   "sample_rate": 22050,
+   "prompt_tokens": 73,
+   "n_past": 81,
+   "ends_sentence": true,
+   "peak_proc_cores": 4.3695729907337695,
+   "peak_proc_pct_of_cpu": 36.41310825611475,
+   "peak_sys_cpu_pct": 77.77777777777779,
+   "peak_ws_mb": 2706.07421875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "q": 3,
+   "text": "tell media short joke",
+   "reply": "Why did the tomato turn red? Because it saw the salad dressing!",
+   "tokens": 14,
+   "endpoint_wait_ms": 1190.2569999947445,
+   "final_accept_ms": 11.034600000130013,
+   "result_ms": 0.39989998913370073,
+   "speech_end_to_text_ms": 1201.6956999868853,
+   "text_to_first_token_ms": 6304.316200010362,
+   "llm_total_ms": 8488.54439999559,
+   "llm_prefill_ms": 6304.275000002235,
+   "decode_tok_s": 5.951646806955018,
+   "tts_ms": 972.3680000024615,
+   "text_to_first_audio_ms": 9461.421700005303,
+   "speech_end_to_first_audio_ms": 10663.117399992188,
+   "win": [
+    70259.4083353,
+    70268.8811957
+   ],
+   "prompt_chars": 281,
+   "audio_s": 4.614421768707483,
+   "sample_rate": 22050,
+   "prompt_tokens": 81,
+   "n_past": 95,
+   "ends_sentence": true,
+   "peak_proc_cores": 4.5215016423172285,
+   "peak_proc_pct_of_cpu": 37.67918035264357,
+   "peak_sys_cpu_pct": 63.095238095238095,
+   "peak_ws_mb": 2710.32421875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "q": 4,
+   "text": "why is the sky blue",
+   "reply": "The sky appears blue because of the way Earth's atmosphere scatters sunlight, like a prism splitting white light into its colors.",
+   "tokens": 28,
+   "endpoint_wait_ms": 1153.4200000023702,
+   "final_accept_ms": 11.668699997244403,
+   "result_ms": 0.6891999946674332,
+   "speech_end_to_text_ms": 1165.7830999902217,
+   "text_to_first_token_ms": 7460.33040000475,
+   "llm_total_ms": 12039.747500006342,
+   "llm_prefill_ms": 7460.290300004999,
+   "decode_tok_s": 5.895895260248765,
+   "tts_ms": 1132.9034000082174,
+   "text_to_first_audio_ms": 13173.094600002514,
+   "speech_end_to_first_audio_ms": 14338.877699992736,
+   "win": [
+    70274.4078733,
+    70287.593331
+   ],
+   "prompt_chars": 294,
+   "audio_s": 8.10639455782313,
+   "sample_rate": 22050,
+   "prompt_tokens": 84,
+   "n_past": 112,
+   "ends_sentence": true,
+   "peak_proc_cores": 4.5148835470871465,
+   "peak_proc_pct_of_cpu": 37.62402955905956,
+   "peak_sys_cpu_pct": 93.05555555555556,
+   "peak_ws_mb": 2714.87109375,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "q": 5,
+   "text": "who wrote the play romeo and juliet",
+   "reply": "William Shakespeare wrote the play Romeo and Juliet.",
+   "tokens": 9,
+   "endpoint_wait_ms": 1371.822399989469,
+   "final_accept_ms": 11.543900007382035,
+   "result_ms": 0.608200003625825,
+   "speech_end_to_text_ms": 1383.978500001831,
+   "text_to_first_token_ms": 8692.506499995943,
+   "llm_total_ms": 10107.32559999451,
+   "llm_prefill_ms": 8692.459199999576,
+   "decode_tok_s": 5.654244103915846,
+   "tts_ms": 787.3920999991242,
+   "text_to_first_audio_ms": 10895.137499988778,
+   "speech_end_to_first_audio_ms": 12279.115999990609,
+   "win": [
+    70293.4075257,
+    70304.3148193
+   ],
+   "prompt_chars": 406,
+   "audio_s": 3.799092970521542,
+   "sample_rate": 22050,
+   "prompt_tokens": 111,
+   "n_past": 120,
+   "ends_sentence": true,
+   "peak_proc_cores": 4.521104640646614,
+   "peak_proc_pct_of_cpu": 37.67587200538845,
+   "peak_sys_cpu_pct": 68.49315068493152,
+   "peak_ws_mb": 2723.3671875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  }
+ ],
+ "overall_peak_ws_mb": 2723.3671875,
+ "overall_peak_private_mb": 1785.94140625,
+ "gpu_all_max_util": 0,
+ "gpu_all_max_mem_mib": 0,
+ "gpu_samples": 84,
+ "loads": {
+  "vosk_load_start": 1,
+  "llm_load_start": 1
+ },
+ "llm_info": {
+  "name": "llm_info",
+  "t": 70227.5340263,
+  "threads": 4,
+  "device": "None",
+  "kwargs": "{'model_name': 'orca-mini-3b-gguf2-q4_0.gguf', 'model_path': 'D:\\\\Hacknex\\\\The offical hacknex\\\\ABLE - Adaptive voice - Based Local Engine\\\\baselines\\\\lumo\\\\models\\\\llm', 'allow_download': False, 'n_threads': 4}"
+ },
+ "gen_kwargs": "{'max_tokens': 80, 'n_batch': 256}",
+ "startup_s": 3.1400664999964647,
+ "events": [
+  {
+   "name": "start",
+   "t": 70226.604849
+  },
+  {
+   "name": "vosk_load_start",
+   "t": 70226.6150798
+  },
+  {
+   "name": "vosk_load_end",
+   "t": 70227.0343035
+  },
+  {
+   "name": "llm_load_start",
+   "t": 70227.1695034
+  },
+  {
+   "name": "llm_load_end",
+   "t": 70227.5340032
+  },
+  {
+   "name": "llm_info",
+   "t": 70227.5340263,
+   "threads": 4,
+   "device": "None",
+   "kwargs": "{'model_name': 'orca-mini-3b-gguf2-q4_0.gguf', 'model_path': 'D:\\\\Hacknex\\\\The offical hacknex\\\\ABLE - Adaptive voice - Based Local Engine\\\\baselines\\\\lumo\\\\models\\\\llm', 'allow_download': False, 'n_threads': 4}"
+  },
+  {
+   "name": "tts_start",
+   "t": 70227.5342931
+  },
+  {
+   "name": "tts_end",
+   "t": 70228.6064771
+  },
+  {
+   "name": "play",
+   "t": 70228.6066774,
+   "audio_s": 5.708390022675737,
+   "sample_rate": 22050
+  },
+  {
+   "name": "stream_open",
+   "t": 70229.4071462
+  },
+  {
+   "name": "speech_end",
+   "t": 70232.7470158,
+   "q": 0
+  },
+  {
+   "name": "accept_true",
+   "t": 70233.9186158,
+   "t0": 70233.9078614
+  },
+  {
+   "name": "result",
+   "t": 70233.91955,
+   "t0": 70233.9186233,
+   "text": "what is the capital of france"
+  },
+  {
+   "name": "llm_start",
+   "t": 70233.9195992,
+   "prompt_chars": 168
+  },
+  {
+   "name": "first_token",
+   "t": 70238.5500664
+  },
+  {
+   "name": "llm_end",
+   "t": 70239.8603286,
+   "tokens": 8,
+   "reply": " The capital city of France is Paris.",
+   "prompt_tokens": 51,
+   "n_past": 59,
+   "kwargs": "{'max_tokens': 80, 'n_batch': 256}"
+  },
+  {
+   "name": "tts_start",
+   "t": 70239.8605942
+  },
+  {
+   "name": "tts_end",
+   "t": 70240.5771898
+  },
+  {
+   "name": "play",
+   "t": 70240.5773325,
+   "audio_s": 3.1373242630385487,
+   "sample_rate": 22050
+  },
+  {
+   "name": "speech_end",
+   "t": 70245.4535158,
+   "q": 1
+  },
+  {
+   "name": "accept_true",
+   "t": 70246.4251844,
+   "t0": 70246.4075611
+  },
+  {
+   "name": "result",
+   "t": 70246.4258401,
+   "t0": 70246.4251909,
+   "text": "how many days are there in a week"
+  },
+  {
+   "name": "llm_start",
+   "t": 70246.4258874,
+   "prompt_chars": 251
+  },
+  {
+   "name": "first_token",
+   "t": 70252.5405726
+  },
+  {
+   "name": "llm_end",
+   "t": 70253.8639789,
+   "tokens": 8,
+   "reply": " There are seven days in a week.",
+   "prompt_tokens": 73,
+   "n_past": 81,
+   "kwargs": "{'max_tokens': 80, 'n_batch': 256}"
+  },
+  {
+   "name": "tts_start",
+   "t": 70253.8642294
+  },
+  {
+   "name": "tts_end",
+   "t": 70254.5420771
+  },
+  {
+   "name": "play",
+   "t": 70254.5422203,
+   "audio_s": 2.347845804988662,
+   "sample_rate": 22050
+  },
+  {
+   "name": "speech_end",
+   "t": 70258.21807830001,
+   "q": 2
+  },
+  {
+   "name": "accept_true",
+   "t": 70259.4193699,
+   "t0": 70259.4083353
+  },
+  {
+   "name": "result",
+   "t": 70259.419774,
+   "t0": 70259.4193741,
+   "text": "tell media short joke"
+  },
+  {
+   "name": "llm_start",
+   "t": 70259.4198152,
+   "prompt_chars": 281
+  },
+  {
+   "name": "first_token",
+   "t": 70265.7240902
+  },
+  {
+   "name": "llm_end",
+   "t": 70267.9083596,
+   "tokens": 14,
+   "reply": " Why did the tomato turn red? Because it saw the salad dressing!",
+   "prompt_tokens": 81,
+   "n_past": 95,
+   "kwargs": "{'max_tokens': 80, 'n_batch': 256}"
+  },
+  {
+   "name": "tts_start",
+   "t": 70267.9086039
+  },
+  {
+   "name": "tts_end",
+   "t": 70268.8809719
+  },
+  {
+   "name": "play",
+   "t": 70268.8811957,
+   "audio_s": 4.614421768707483,
+   "sample_rate": 22050
+  },
+  {
+   "name": "speech_end",
+   "t": 70273.2544533,
+   "q": 3
+  },
+  {
+   "name": "accept_true",
+   "t": 70274.419542,
+   "t0": 70274.4078733
+  },
+  {
+   "name": "result",
+   "t": 70274.4202364,
+   "t0": 70274.4195472,
+   "text": "why is the sky blue"
+  },
+  {
+   "name": "llm_start",
+   "t": 70274.4202765,
+   "prompt_chars": 294
+  },
+  {
+   "name": "first_token",
+   "t": 70281.8805668
+  },
+  {
+   "name": "llm_end",
+   "t": 70286.460024,
+   "tokens": 28,
+   "reply": " The sky appears blue because of the way Earth's atmosphere scatters sunlight, like a prism splitting white light into its colors.",
+   "prompt_tokens": 84,
+   "n_past": 112,
+   "kwargs": "{'max_tokens': 80, 'n_batch': 256}"
+  },
+  {
+   "name": "tts_start",
+   "t": 70286.4602911
+  },
+  {
+   "name": "tts_end",
+   "t": 70287.5931945
+  },
+  {
+   "name": "play",
+   "t": 70287.593331,
+   "audio_s": 8.10639455782313,
+   "sample_rate": 22050
+  },
+  {
+   "name": "speech_end",
+   "t": 70292.0357033,
+   "q": 4
+  },
+  {
+   "name": "accept_true",
+   "t": 70293.4190696,
+   "t0": 70293.4075257
+  },
+  {
+   "name": "result",
+   "t": 70293.4196818,
+   "t0": 70293.4190736,
+   "text": "who wrote the play romeo and juliet"
+  },
+  {
+   "name": "llm_start",
+   "t": 70293.4197291,
+   "prompt_chars": 406
+  },
+  {
+   "name": "first_token",
+   "t": 70302.1121883
+  },
+  {
+   "name": "llm_end",
+   "t": 70303.5270547,
+   "tokens": 9,
+   "reply": " William Shakespeare wrote the play Romeo and Juliet.",
+   "prompt_tokens": 111,
+   "n_past": 120,
+   "kwargs": "{'max_tokens': 80, 'n_batch': 256}"
+  },
+  {
+   "name": "tts_start",
+   "t": 70303.5272965
+  },
+  {
+   "name": "tts_end",
+   "t": 70304.3146886
+  },
+  {
+   "name": "play",
+   "t": 70304.3148193,
+   "audio_s": 3.799092970521542,
+   "sample_rate": 22050
+  }
+ ],
+ "target": "v1",
+ "label": "e1_nb256",
+ "tuning": "{\"n_batch\": 256}",
+ "cpu_threads_logical": 12
+}

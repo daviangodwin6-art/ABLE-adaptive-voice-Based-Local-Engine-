@@ -1,0 +1,813 @@
+{
+ "rows": [
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 4494.577700010268,
+   "first_tts_end_ms": 5270.905199999106,
+   "last_play_end_ms": 8315.601100010099,
+   "gaps_ms": [],
+   "reply_audio_s": 3.0444444444444443,
+   "q": 1,
+   "text": "what is the capital of france",
+   "reply": "The capital city of France is Paris.",
+   "tokens": 8,
+   "endpoint_wait_ms": 1160.7748999958858,
+   "final_accept_ms": 10.8808999939356,
+   "result_ms": 0.9513999975752085,
+   "speech_end_to_text_ms": 1172.6148999878205,
+   "text_to_first_token_ms": 3170.93439999735,
+   "llm_total_ms": 4494.25400000473,
+   "llm_prefill_ms": 3170.885100000305,
+   "decode_tok_s": 5.289530379606619,
+   "tts_ms": 776.3274999888381,
+   "text_to_first_audio_ms": 5271.055400007754,
+   "speech_end_to_first_audio_ms": 6443.670299995574,
+   "win": [
+    73494.774988,
+    73503.1024291
+   ],
+   "prompt_chars": 119,
+   "audio_s": 3.0444444444444443,
+   "sample_rate": 22050,
+   "prompt_tokens": 34,
+   "n_past": 42,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.603315170369625,
+   "peak_proc_pct_of_cpu": 46.694293086413545,
+   "peak_sys_cpu_pct": 89.28571428571429,
+   "peak_ws_mb": 2692.4375,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 6230.513400005293,
+   "first_tts_end_ms": 7002.705299993977,
+   "last_play_end_ms": 9304.407400006312,
+   "gaps_ms": [],
+   "reply_audio_s": 2.30140589569161,
+   "q": 2,
+   "text": "how many days are there in a week",
+   "reply": "There are seven days in a week.",
+   "tokens": 8,
+   "endpoint_wait_ms": 954.3838999961736,
+   "final_accept_ms": 13.729999991483055,
+   "result_ms": 0.7144999981392175,
+   "speech_end_to_text_ms": 968.8348999916343,
+   "text_to_first_token_ms": 4874.680299995816,
+   "llm_total_ms": 6230.201700003818,
+   "llm_prefill_ms": 4874.632799997926,
+   "decode_tok_s": 5.163883591582526,
+   "tts_ms": 772.1918999886839,
+   "text_to_first_audio_ms": 7002.85079999594,
+   "speech_end_to_first_audio_ms": 7971.6856999875745,
+   "win": [
+    73508.775097,
+    73518.0939554
+   ],
+   "prompt_chars": 202,
+   "audio_s": 2.30140589569161,
+   "sample_rate": 22050,
+   "prompt_tokens": 56,
+   "n_past": 64,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.596758754964898,
+   "peak_proc_pct_of_cpu": 46.639656291374145,
+   "peak_sys_cpu_pct": 85.91549295774648,
+   "peak_ws_mb": 2701.2265625,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 7146.398900003987,
+   "first_tts_end_ms": 8058.469300012803,
+   "last_play_end_ms": 12638.769400000456,
+   "gaps_ms": [],
+   "reply_audio_s": 4.579591836734694,
+   "q": 3,
+   "text": "tell me a short joke",
+   "reply": "Why did the tomato turn red? Because it saw the salad dressing!",
+   "tokens": 14,
+   "endpoint_wait_ms": 1189.5602999866242,
+   "final_accept_ms": 12.994600008823909,
+   "result_ms": 0.352299990481697,
+   "speech_end_to_text_ms": 1202.9125999833923,
+   "text_to_first_token_ms": 4685.485500012874,
+   "llm_total_ms": 7146.059599996079,
+   "llm_prefill_ms": 4685.440400004154,
+   "decode_tok_s": 5.283223019654022,
+   "tts_ms": 912.0704000088153,
+   "text_to_first_audio_ms": 8058.619800009183,
+   "speech_end_to_first_audio_ms": 9261.532399992575,
+   "win": [
+    73523.2748359,
+    73535.9269576
+   ],
+   "prompt_chars": 188,
+   "audio_s": 4.579591836734694,
+   "sample_rate": 22050,
+   "prompt_tokens": 54,
+   "n_past": 68,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.607823237687555,
+   "peak_proc_pct_of_cpu": 46.73186031406296,
+   "peak_sys_cpu_pct": 90.47619047619048,
+   "peak_ws_mb": 2706.86328125,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 14740.916099995957,
+   "first_tts_end_ms": 16979.586899993592,
+   "last_play_end_ms": 36597.40790000069,
+   "gaps_ms": [],
+   "reply_audio_s": 19.617142857142856,
+   "q": 4,
+   "text": "why is the sky blue",
+   "reply": "The sky appears blue because of a phenomenon called Rayleigh scattering. When sunlight enters the Earth's atmosphere, some of the light scatters in all directions and gets absorbed by molecules like nitrogen and oxygen. Blue light has a shorter wavelength and scatters more easily than other colors, so it",
+   "tokens": 60,
+   "endpoint_wait_ms": 1153.0339999881107,
+   "final_accept_ms": 57.85700000706129,
+   "result_ms": 0.6775000074412674,
+   "speech_end_to_text_ms": 1211.5733999962686,
+   "text_to_first_token_ms": 4948.357200002647,
+   "llm_total_ms": 14740.58939999668,
+   "llm_prefill_ms": 4948.309400002472,
+   "decode_tok_s": 6.02515450947429,
+   "tts_ms": 2238.670799997635,
+   "text_to_first_audio_ms": 16979.750300000887,
+   "speech_end_to_first_audio_ms": 18191.323699997156,
+   "win": [
+    73541.2746846,
+    73577.9306319
+   ],
+   "prompt_chars": 206,
+   "audio_s": 19.617142857142856,
+   "sample_rate": 22050,
+   "prompt_tokens": 57,
+   "n_past": 117,
+   "ends_sentence": false,
+   "peak_proc_cores": 5.595684209985794,
+   "peak_proc_pct_of_cpu": 46.63070174988162,
+   "peak_sys_cpu_pct": 92.85714285714286,
+   "peak_ws_mb": 2710.984375,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 11091.283400004613,
+   "first_tts_end_ms": 11959.512600005837,
+   "last_play_end_ms": 15793.985600001179,
+   "gaps_ms": [],
+   "reply_audio_s": 3.833922902494331,
+   "q": 5,
+   "text": "who wrote the play romeo and juliet",
+   "reply": "William Shakespeare wrote the play Romeo and Juliet.",
+   "tokens": 9,
+   "endpoint_wait_ms": 1372.1424999966985,
+   "final_accept_ms": 11.376299997209571,
+   "result_ms": 0.9986999939428642,
+   "speech_end_to_text_ms": 1384.544399988954,
+   "text_to_first_token_ms": 9531.688400005805,
+   "llm_total_ms": 11090.926199991372,
+   "llm_prefill_ms": 9531.631299993023,
+   "decode_tok_s": 5.130524059309416,
+   "tts_ms": 868.229200001224,
+   "text_to_first_audio_ms": 11959.653300000355,
+   "speech_end_to_first_audio_ms": 13344.197699989309,
+   "win": [
+    73583.7750431,
+    73599.5814306
+   ],
+   "prompt_chars": 463,
+   "audio_s": 3.833922902494331,
+   "sample_rate": 22050,
+   "prompt_tokens": 109,
+   "n_past": 118,
+   "ends_sentence": true,
+   "peak_proc_cores": 5.609534513620318,
+   "peak_proc_pct_of_cpu": 46.74612094683598,
+   "peak_sys_cpu_pct": 86.11111111111111,
+   "peak_ws_mb": 2726.10546875,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 15073.80140000896,
+   "first_tts_end_ms": 17051.78039999737,
+   "last_play_end_ms": 33648.397900004056,
+   "gaps_ms": [],
+   "reply_audio_s": 16.59591836734694,
+   "q": 6,
+   "text": "explain how a rainbow forms",
+   "reply": "A rainbow is formed when sunlight passes through water droplets in the air, such as after a rain shower. The light is refracted, or bent, as it enters the droplet, and then reflected off the back of the droplet before being dispersed into its component colors (red,",
+   "tokens": 60,
+   "endpoint_wait_ms": 1076.0673999902792,
+   "final_accept_ms": 12.412600000970997,
+   "result_ms": 0.5594999965978786,
+   "speech_end_to_text_ms": 1089.0441999945324,
+   "text_to_first_token_ms": 5181.36630000663,
+   "llm_total_ms": 15073.464599990984,
+   "llm_prefill_ms": 5181.321500000195,
+   "decode_tok_s": 5.964329408058698,
+   "tts_ms": 1977.9789999884088,
+   "text_to_first_audio_ms": 17051.931000009063,
+   "speech_end_to_first_audio_ms": 18140.975200003595,
+   "win": [
+    73605.7750305,
+    73639.4364052
+   ],
+   "prompt_chars": 218,
+   "audio_s": 16.59591836734694,
+   "sample_rate": 22050,
+   "prompt_tokens": 58,
+   "n_past": 118,
+   "ends_sentence": false,
+   "peak_proc_cores": 5.8974035530989966,
+   "peak_proc_pct_of_cpu": 49.14502960915831,
+   "peak_sys_cpu_pct": 93.05555555555556,
+   "peak_ws_mb": 2727.265625,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 19047.39240001072,
+   "first_tts_end_ms": 21293.978600006085,
+   "last_play_end_ms": 41453.607800009195,
+   "gaps_ms": [],
+   "reply_audio_s": 20.15909297052154,
+   "q": 7,
+   "text": "give me three tips for studying",
+   "reply": "1. Set realistic goals for yourself and track your progress towards achieving them. 2. Break down your study time into manageable chunks to avoid feeling overwhelmed. 3. Take breaks and make sure you're getting enough sleep and eating well to keep your mind sharp and body functioning optim",
+   "tokens": 60,
+   "endpoint_wait_ms": 1174.683899997035,
+   "final_accept_ms": 11.811899996246211,
+   "result_ms": 0.6085999921197072,
+   "speech_end_to_text_ms": 1187.1090999920852,
+   "text_to_first_token_ms": 9159.030300012091,
+   "llm_total_ms": 19047.034600007464,
+   "llm_prefill_ms": 9158.984700014116,
+   "decode_tok_s": 5.966798367394939,
+   "tts_ms": 2246.586199995363,
+   "text_to_first_audio_ms": 21294.121600003564,
+   "speech_end_to_first_audio_ms": 22481.23069999565,
+   "win": [
+    73645.2748345,
+    73686.7408675
+   ],
+   "prompt_chars": 427,
+   "audio_s": 20.15909297052154,
+   "sample_rate": 22050,
+   "prompt_tokens": 104,
+   "n_past": 164,
+   "ends_sentence": false,
+   "peak_proc_cores": 5.613962948619416,
+   "peak_proc_pct_of_cpu": 46.78302457182846,
+   "peak_sys_cpu_pct": 98.61111111111111,
+   "peak_ws_mb": 2731.390625,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  },
+  {
+   "n_sentences": 1,
+   "first_sentence_ms": null,
+   "first_tts_start_ms": 18745.229799998924,
+   "first_tts_end_ms": 21076.310099990224,
+   "last_play_end_ms": 41132.63999999617,
+   "gaps_ms": [],
+   "reply_audio_s": 20.055691609977323,
+   "q": 8,
+   "text": "what is photosynthesis",
+   "reply": "Photosynthesis is the process by which green plants, algae, and some bacteria convert light energy from the sun into chemical energy in the form of organic compounds such as glucose. It occurs in specialized organelles called chloroplasts, where pigments such as chlorophyll absorb photons of various wavelength",
+   "tokens": 60,
+   "endpoint_wait_ms": 1007.5730999960797,
+   "final_accept_ms": 10.908299998845905,
+   "result_ms": 0.6946000066818669,
+   "speech_end_to_text_ms": 1019.1806999937398,
+   "text_to_first_token_ms": 8837.085399994976,
+   "llm_total_ms": 18744.891800000914,
+   "llm_prefill_ms": 8837.042400002247,
+   "decode_tok_s": 5.954874526050824,
+   "tts_ms": 2331.0802999912994,
+   "text_to_first_audio_ms": 21076.46240000031,
+   "speech_end_to_first_audio_ms": 22095.64309999405,
+   "win": [
+    73692.2748487,
+    73733.4190963
+   ],
+   "prompt_chars": 447,
+   "audio_s": 20.055691609977323,
+   "sample_rate": 22050,
+   "prompt_tokens": 104,
+   "n_past": 164,
+   "ends_sentence": false,
+   "peak_proc_cores": 5.614203885908063,
+   "peak_proc_pct_of_cpu": 46.78503238256719,
+   "peak_sys_cpu_pct": 96.42857142857143,
+   "peak_ws_mb": 2735.5234375,
+   "peak_gpu_util": 0,
+   "peak_gpu_mem_mib": 0
+  }
+ ],
+ "overall_peak_ws_mb": 2735.5234375,
+ "overall_peak_private_mb": 1800.64453125,
+ "gpu_all_max_util": 0,
+ "gpu_all_max_mem_mib": 0,
+ "gpu_samples": 265,
+ "loads": {
+  "vosk_load_start": 1,
+  "llm_load_start": 1
+ },
+ "llm_info": {
+  "name": "llm_info",
+  "t": 73482.6257325,
+  "threads": 5,
+  "device": "None",
+  "kwargs": "{'model_name': 'orca-mini-3b-gguf2-q4_0.gguf', 'model_path': 'D:\\\\Hacknex\\\\The offical hacknex\\\\ABLE - Adaptive voice - Based Local Engine\\\\baselines\\\\lumo\\\\models\\\\llm', 'allow_download': False, 'n_threads': 5}"
+ },
+ "gen_kwargs": "{'max_tokens': 60, 'n_batch': 128}",
+ "startup_s": 9.052404099988053,
+ "events": [
+  {
+   "name": "start",
+   "t": 73481.6846287
+  },
+  {
+   "name": "vosk_load_start",
+   "t": 73481.6981821
+  },
+  {
+   "name": "vosk_load_end",
+   "t": 73482.1413291
+  },
+  {
+   "name": "llm_load_start",
+   "t": 73482.2764744
+  },
+  {
+   "name": "llm_load_end",
+   "t": 73482.6257112
+  },
+  {
+   "name": "llm_info",
+   "t": 73482.6257325,
+   "threads": 5,
+   "device": "None",
+   "kwargs": "{'model_name': 'orca-mini-3b-gguf2-q4_0.gguf', 'model_path': 'D:\\\\Hacknex\\\\The offical hacknex\\\\ABLE - Adaptive voice - Based Local Engine\\\\baselines\\\\lumo\\\\models\\\\llm', 'allow_download': False, 'n_threads': 5}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73482.6260385
+  },
+  {
+   "name": "tts_end",
+   "t": 73483.6253852
+  },
+  {
+   "name": "play",
+   "t": 73483.6255454,
+   "audio_s": 5.847709750566893,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73489.473614
+  },
+  {
+   "name": "stream_open",
+   "t": 73490.2742185
+  },
+  {
+   "name": "speech_end",
+   "t": 73493.61421310001,
+   "q": 0
+  },
+  {
+   "name": "accept_true",
+   "t": 73494.7858689,
+   "t0": 73494.774988
+  },
+  {
+   "name": "result",
+   "t": 73494.786828,
+   "t0": 73494.7858766,
+   "text": "what is the capital of france"
+  },
+  {
+   "name": "llm_start",
+   "t": 73494.7868773,
+   "prompt_chars": 119
+  },
+  {
+   "name": "first_token",
+   "t": 73497.9577624
+  },
+  {
+   "name": "llm_end",
+   "t": 73499.2811313,
+   "tokens": 8,
+   "reply": " The capital city of France is Paris.",
+   "prompt_tokens": 34,
+   "n_past": 42,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73499.2814057
+  },
+  {
+   "name": "tts_end",
+   "t": 73500.0577332
+  },
+  {
+   "name": "play",
+   "t": 73500.0578834,
+   "audio_s": 3.0444444444444443,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73503.1024291
+  },
+  {
+   "name": "speech_end",
+   "t": 73507.82071310001,
+   "q": 1
+  },
+  {
+   "name": "accept_true",
+   "t": 73508.788827,
+   "t0": 73508.775097
+  },
+  {
+   "name": "result",
+   "t": 73508.789548,
+   "t0": 73508.7888335,
+   "text": "how many days are there in a week"
+  },
+  {
+   "name": "llm_start",
+   "t": 73508.7895955,
+   "prompt_chars": 202
+  },
+  {
+   "name": "first_token",
+   "t": 73513.6642283
+  },
+  {
+   "name": "llm_end",
+   "t": 73515.0197972,
+   "tokens": 8,
+   "reply": " There are seven days in a week.",
+   "prompt_tokens": 56,
+   "n_past": 64,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73515.0200614
+  },
+  {
+   "name": "tts_end",
+   "t": 73515.7922533
+  },
+  {
+   "name": "play",
+   "t": 73515.7923988,
+   "audio_s": 2.30140589569161,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73518.0939554
+  },
+  {
+   "name": "speech_end",
+   "t": 73522.08527560001,
+   "q": 2
+  },
+  {
+   "name": "accept_true",
+   "t": 73523.2878305,
+   "t0": 73523.2748359
+  },
+  {
+   "name": "result",
+   "t": 73523.2881882,
+   "t0": 73523.2878359,
+   "text": "tell me a short joke"
+  },
+  {
+   "name": "llm_start",
+   "t": 73523.2882333,
+   "prompt_chars": 188
+  },
+  {
+   "name": "first_token",
+   "t": 73527.9736737
+  },
+  {
+   "name": "llm_end",
+   "t": 73530.4342929,
+   "tokens": 14,
+   "reply": " Why did the tomato turn red? Because it saw the salad dressing!",
+   "prompt_tokens": 54,
+   "n_past": 68,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73530.4345871
+  },
+  {
+   "name": "tts_end",
+   "t": 73531.3466575
+  },
+  {
+   "name": "play",
+   "t": 73531.346808,
+   "audio_s": 4.579591836734694,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73535.9269576
+  },
+  {
+   "name": "speech_end",
+   "t": 73540.1216506,
+   "q": 3
+  },
+  {
+   "name": "accept_true",
+   "t": 73541.3325416,
+   "t0": 73541.2746846
+  },
+  {
+   "name": "result",
+   "t": 73541.333224,
+   "t0": 73541.3325465,
+   "text": "why is the sky blue"
+  },
+  {
+   "name": "llm_start",
+   "t": 73541.3332718,
+   "prompt_chars": 206
+  },
+  {
+   "name": "first_token",
+   "t": 73546.2815812
+  },
+  {
+   "name": "llm_end",
+   "t": 73556.0738612,
+   "tokens": 60,
+   "reply": " The sky appears blue because of a phenomenon called Rayleigh scattering. When sunlight enters the Earth's atmosphere, some of the light scatters in all directions and gets absorbed by molecules like nitrogen and oxygen. Blue light has a shorter wavelength and scatters more easily than other colors, so it",
+   "prompt_tokens": 57,
+   "n_past": 117,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73556.0741401
+  },
+  {
+   "name": "tts_end",
+   "t": 73558.3128109
+  },
+  {
+   "name": "play",
+   "t": 73558.3129743,
+   "audio_s": 19.617142857142856,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73577.9306319
+  },
+  {
+   "name": "speech_end",
+   "t": 73582.4029006,
+   "q": 4
+  },
+  {
+   "name": "accept_true",
+   "t": 73583.7864194,
+   "t0": 73583.7750431
+  },
+  {
+   "name": "result",
+   "t": 73583.787445,
+   "t0": 73583.7864463,
+   "text": "who wrote the play romeo and juliet"
+  },
+  {
+   "name": "llm_start",
+   "t": 73583.7875021,
+   "prompt_chars": 463
+  },
+  {
+   "name": "first_token",
+   "t": 73593.3191334
+  },
+  {
+   "name": "llm_end",
+   "t": 73594.8784283,
+   "tokens": 9,
+   "reply": " William Shakespeare wrote the play Romeo and Juliet.",
+   "prompt_tokens": 109,
+   "n_past": 118,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73594.8787284
+  },
+  {
+   "name": "tts_end",
+   "t": 73595.7469576
+  },
+  {
+   "name": "play",
+   "t": 73595.7470983,
+   "audio_s": 3.833922902494331,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73599.5814306
+  },
+  {
+   "name": "speech_end",
+   "t": 73604.6989631,
+   "q": 5
+  },
+  {
+   "name": "accept_true",
+   "t": 73605.7874431,
+   "t0": 73605.7750305
+  },
+  {
+   "name": "result",
+   "t": 73605.7880073,
+   "t0": 73605.7874478,
+   "text": "explain how a rainbow forms"
+  },
+  {
+   "name": "llm_start",
+   "t": 73605.7880521,
+   "prompt_chars": 218
+  },
+  {
+   "name": "first_token",
+   "t": 73610.9693736
+  },
+  {
+   "name": "llm_end",
+   "t": 73620.8615167,
+   "tokens": 60,
+   "reply": " A rainbow is formed when sunlight passes through water droplets in the air, such as after a rain shower. The light is refracted, or bent, as it enters the droplet, and then reflected off the back of the droplet before being dispersed into its component colors (red,",
+   "prompt_tokens": 58,
+   "n_past": 118,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73620.8618087
+  },
+  {
+   "name": "tts_end",
+   "t": 73622.8397877
+  },
+  {
+   "name": "play",
+   "t": 73622.8399383,
+   "audio_s": 16.59591836734694,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73639.4364052
+  },
+  {
+   "name": "speech_end",
+   "t": 73644.1001506,
+   "q": 6
+  },
+  {
+   "name": "accept_true",
+   "t": 73645.2866464,
+   "t0": 73645.2748345
+  },
+  {
+   "name": "result",
+   "t": 73645.2872597,
+   "t0": 73645.2866511,
+   "text": "give me three tips for studying"
+  },
+  {
+   "name": "llm_start",
+   "t": 73645.2873053,
+   "prompt_chars": 427
+  },
+  {
+   "name": "first_token",
+   "t": 73654.44629
+  },
+  {
+   "name": "llm_end",
+   "t": 73664.3343399,
+   "tokens": 60,
+   "reply": " 1. Set realistic goals for yourself and track your progress towards achieving them. 2. Break down your study time into manageable chunks to avoid feeling overwhelmed. 3. Take breaks and make sure you're getting enough sleep and eating well to keep your mind sharp and body functioning optim",
+   "prompt_tokens": 104,
+   "n_past": 164,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73664.3346521
+  },
+  {
+   "name": "tts_end",
+   "t": 73666.5812383
+  },
+  {
+   "name": "play",
+   "t": 73666.5813813,
+   "audio_s": 20.15909297052154,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73686.7408675
+  },
+  {
+   "name": "speech_end",
+   "t": 73691.26727560001,
+   "q": 7
+  },
+  {
+   "name": "accept_true",
+   "t": 73692.285757,
+   "t0": 73692.2748487
+  },
+  {
+   "name": "result",
+   "t": 73692.2864563,
+   "t0": 73692.2857617,
+   "text": "what is photosynthesis"
+  },
+  {
+   "name": "llm_start",
+   "t": 73692.2864993,
+   "prompt_chars": 447
+  },
+  {
+   "name": "first_token",
+   "t": 73701.1235417
+  },
+  {
+   "name": "llm_end",
+   "t": 73711.0313911,
+   "tokens": 60,
+   "reply": " Photosynthesis is the process by which green plants, algae, and some bacteria convert light energy from the sun into chemical energy in the form of organic compounds such as glucose. It occurs in specialized organelles called chloroplasts, where pigments such as chlorophyll absorb photons of various wavelength",
+   "prompt_tokens": 104,
+   "n_past": 164,
+   "kwargs": "{'max_tokens': 60, 'n_batch': 128}"
+  },
+  {
+   "name": "tts_start",
+   "t": 73711.0316861
+  },
+  {
+   "name": "tts_end",
+   "t": 73713.3627664
+  },
+  {
+   "name": "play",
+   "t": 73713.3629187,
+   "audio_s": 20.055691609977323,
+   "sample_rate": 22050
+  },
+  {
+   "name": "play_end",
+   "t": 73733.4190963
+  }
+ ],
+ "target": "v1",
+ "label": "e3_off",
+ "tuning": "{\"n_batch\": 128, \"n_threads\": 5, \"history_turns\": 3, \"max_tokens\": 60, \"prompt_style\": \"short\", \"stream\": false}",
+ "cpu_threads_logical": 12
+}
