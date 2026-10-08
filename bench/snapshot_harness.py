@@ -7,7 +7,8 @@ How: main.py is exec'd as-is. Before that we swap in
     subprocess.run (Piper call) and winsound.PlaySound (audio is NOT played; the call time is "first audio").
 No Lumo file is changed. Run from anywhere with Lumo's venv:
   baselines\\lumo\\.venv\\Scripts\\python.exe bench\\snapshot_harness.py
-Writes results/raw/snapshot_events.json and results/snapshot_timings.md
+One invocation = one pass (greeting + 5 questions). Options: --target lumo|v0|v1, --label, --tuning '<json>', --out.
+Writes the pass to --out (default results/raw/snapshot_events.json); bench/ablate.py runs many passes and aggregates.
 """
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # never touch the GPU
@@ -187,7 +188,13 @@ def install():
     vosk.Model.__init__ = model_init
 
     import gpt4all
+    from gpt4all._pyllmodel import LLModel
     orig_init, orig_gen = gpt4all.GPT4All.__init__, gpt4all.GPT4All.generate
+    ptok = [0]
+    def prompt_cb(token_id):  # llama.cpp calls this once per prompt token it evaluates
+        ptok[0] += 1
+        return True
+    LLModel._prompt_callback = staticmethod(prompt_cb)
     def init(self, *a, **k):
         ev("llm_load_start"); orig_init(self, *a, **k); ev("llm_load_end")
         ev("llm_info", threads=self.model.thread_count(), device=str(self.device), kwargs=repr(k))
@@ -199,9 +206,11 @@ def install():
             cnt[0] += 1
             return True
         k["callback"] = cb
+        ptok[0] = 0
         ev("llm_start", prompt_chars=len(prompt))
         out = orig_gen(self, prompt, **k)
-        ev("llm_end", tokens=cnt[0], reply=out, kwargs=repr({a: b for a, b in k.items() if a != "callback"}))
+        ev("llm_end", tokens=cnt[0], reply=out, prompt_tokens=ptok[0], n_past=self.model.context.n_past,
+           kwargs=repr({a: b for a, b in k.items() if a != "callback"}))
         return out
     gpt4all.GPT4All.__init__, gpt4all.GPT4All.generate = init, gen
 
@@ -251,7 +260,8 @@ def finish():
             "text_to_first_audio_ms": (pl["t"] - r["t"]) * 1000,
             "speech_end_to_first_audio_ms": (pl["t"] - e["t"]) * 1000,
             "win": (a["t0"], pl["t"]), "prompt_chars": ls["prompt_chars"], "audio_s": pl["audio_s"],
-            "sample_rate": pl["sample_rate"]})
+            "sample_rate": pl["sample_rate"], "prompt_tokens": le["prompt_tokens"], "n_past": le["n_past"],
+            "ends_sentence": le["reply"].strip().endswith((".", "!", "?"))})
     # resources over each reply window (accept_true -> first audio)
     S = res_samples
     for r in rows:
@@ -279,34 +289,38 @@ def finish():
            "gen_kwargs": next(e["kwargs"] for e in E if e["name"] == "llm_end"),
            "startup_s": next(e for e in E if e["name"] == "stream_open")["t"] - t_zero,
            "events": [{k: v for k, v in e.items()} for e in E]}
-    (ROOT / "results" / "raw").mkdir(parents=True, exist_ok=True)
-    (ROOT / "results" / "raw" / "snapshot_events.json").write_text(json.dumps(out, indent=1, default=str))
-    keys = [("speech_end_to_text_ms", "End of speech -> text (endpoint wait + decode)"),
-            ("endpoint_wait_ms", "  of which: wait for silence/chunk until final decode starts"),
-            ("final_accept_ms", "  of which: final AcceptWaveform call"),
-            ("text_to_first_token_ms", "Text -> first LLM token"), ("llm_total_ms", "LLM total"),
-            ("tts_ms", "Piper run (full WAV written)"), ("text_to_first_audio_ms", "Text -> first audio"),
-            ("speech_end_to_first_audio_ms", "**End of speech -> first audio**")]
-    L = ["| # | heard | tokens | " + " | ".join(h for _, h in keys) + " |", "|" + "---|" * (3 + len(keys))]
+    out["target"], out["label"], out["tuning"] = ARGS.target, ARGS.label, ARGS.tuning
+    out["cpu_threads_logical"] = os.cpu_count()
+    Path(ARGS.out).parent.mkdir(parents=True, exist_ok=True)
+    Path(ARGS.out).write_text(json.dumps(out, indent=1, default=str))
     for r in rows:
-        L.append(f"| {r['q']} | {r['text']} | {r['tokens']} | " + " | ".join(f"{r[k]:.0f}" for k, _ in keys) + " |")
-    for lab, f in (("**Median**", statistics.median), ("**Worst**", max)):
-        L.append(f"| | {lab} | {f([r['tokens'] for r in rows]):.0f} | " + " | ".join(f"{f([r[k] for r in rows]):.0f}" for k, _ in keys) + " |")
-    md = ["# Snapshot timing of unmodified main.py (5 questions, fake real-time mic)", "",
-          "Times in ms. Input = synthetic Piper speech (not a human voice).", ""] + L
-    (ROOT / "results" / "snapshot_timings.md").write_text("\n".join(md) + "\n", encoding="utf-8")
-    print("\n".join(md))
-    print(json.dumps({k: v for k, v in out.items() if k not in ("rows", "events")}, indent=1, default=str))
-    for r in rows:
-        print(r["q"], {k: round(v, 1) for k, v in r.items() if k.startswith(("peak", "decode"))}, r["audio_s"], r["sample_rate"], r["prompt_chars"], "|", r["reply"])
+        print(f"Q{r['q']} heard={r['text']!r} ptok={r['prompt_tokens']} (n_past={r['n_past']}) tok={r['tokens']} "
+              f"A={r['speech_end_to_text_ms']:.0f} B={r['text_to_first_token_ms']:.0f} C={r['llm_total_ms']:.0f} "
+              f"D={r['text_to_first_audio_ms']:.0f} E={r['speech_end_to_first_audio_ms']:.0f} | {r['reply']}")
+    print("threads:", out["llm_info"].get("threads"), "gen_kwargs:", out["gen_kwargs"],
+          "gpu max util/mem:", out["gpu_all_max_util"], out["gpu_all_max_mem_mib"], "->", ARGS.out)
     os._exit(0)
 
 
+TARGETS = {"lumo": LUMO / "main.py", "v0": ROOT / "pipeline" / "jarvis_v0.py", "v1": ROOT / "pipeline" / "jarvis_v1.py"}
+
 if __name__ == "__main__":
-    os.chdir(LUMO)
+    import argparse
+    ap = argparse.ArgumentParser(description="Time ONE pass (5 questions) of a voice loop with a fake real-time mic.")
+    ap.add_argument("--target", choices=TARGETS, default="lumo")
+    ap.add_argument("--label", default=None)
+    ap.add_argument("--tuning", default="", help="JSON string handed to jarvis_v1 via JARVIS_TUNING")
+    ap.add_argument("--out", default=str(ROOT / "results" / "raw" / "snapshot_events.json"))
+    ARGS = ap.parse_args()
+    ARGS.label = ARGS.label or ARGS.target
+    ARGS.out = str(Path(ARGS.out).resolve())  # before chdir below
+    if ARGS.tuning:
+        os.environ["JARVIS_TUNING"] = ARGS.tuning
+    os.chdir(LUMO)  # Lumo uses relative paths; ours uses absolute ones, so this is harmless for v0/v1
     install()
     threading.Thread(target=res_loop, daemon=True).start()
     threading.Thread(target=gpu_loop, daemon=True).start()
     ev("start")
-    src = (LUMO / "main.py").read_text(encoding="utf-8")
-    exec(compile(src, "main.py", "exec"), g)
+    path = TARGETS[ARGS.target]
+    g["__file__"] = str(path)
+    exec(compile(path.read_text(encoding="utf-8"), str(path.name), "exec"), g)

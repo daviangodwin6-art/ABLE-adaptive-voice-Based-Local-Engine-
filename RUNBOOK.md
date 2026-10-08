@@ -43,3 +43,12 @@ Run from `baselines/lumo` with `set CUDA_VISIBLE_DEVICES=-1`, `set PYTHONUTF8=1`
 - `baselines/lumo/.venv/Scripts/python.exe bench/snapshot_harness.py` runs the UNMODIFIED main.py with a fake real-time mic + timing hooks; writes `results/snapshot_timings.md` and `results/raw/snapshot_events.json`. Plugged in: median end-of-speech -> first audio 12.6 s, worst 15.2 s.
 - Problem solved: ctypes `GetProcessTimes` needs `argtypes` (HANDLE) or it raises OverflowError on the pseudo-handle.
 - Mistake fixed: an earlier GPU-sampling loop left `results_gpu_tmp.txt` in the repo; removed.
+
+## Step A - our own copy (jarvis_v0) vs Lumo
+- Files: `config/persona.toml` (name ABLE, TOML via stdlib `tomllib`), `pipeline/jarvis_v0.py` (frozen copy of Lumo's loop, credit in header), `bench/snapshot_harness.py` (now ONE pass per call: `--target lumo|v0|v1 --label --tuning --out`), `bench/ablate.py` (runs configs interleaved over N passes and writes the table).
+- Commands (project root, Lumo's venv):
+  - live demo: `.\baselines\lumo\.venv\Scripts\python.exe pipeline\jarvis_v0.py`
+  - Gate A: `.\baselines\lumo\.venv\Scripts\python.exe bench\ablate.py --passes 3 --md results\gate_a.md --cfg "lumo|lumo|" --cfg "v0|v0|"`
+- Prompt tokens are counted exactly: a wrapper on `LLModel._prompt_callback` (called once per prompt token); it equals `context.n_past - generated tokens` on every question.
+- Result (`results/gate_a.md`, plugged in): Lumo median E 12.9 s, v0 12.0 s; time per prompt token identical (97 vs 98 ms).
+- Problem solved: harness `--out` was relative and the harness does `chdir` into baselines/lumo, so a `results/` folder appeared inside Lumo. Fixed by resolving the path first; stray folder deleted.

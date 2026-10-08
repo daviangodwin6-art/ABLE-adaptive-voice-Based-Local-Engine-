@@ -1,0 +1,10 @@
+# Persona and wording for our assistant. Read with Python's built-in tomllib.
+name = "ABLE"
+persona = "You are ABLE, a helpful offline AI assistant."
+reply_rule = "one or two short sentences"
+greeting = "Hello! I am ABLE, your offline voice assistant. How could I help you today?"
+
+# Same lists as Lumo's main.py. There is no wake word (empty list), exactly like Lumo.
+wake_words = []
+greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening"]
+exit_words = ["exit", "quit", "stop", "goodbye", "bye", "see you", "bye bye", "farewell", "tata"]
