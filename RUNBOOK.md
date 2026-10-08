@@ -38,3 +38,8 @@ Run from `baselines/lumo` with `set CUDA_VISIBLE_DEVICES=-1`, `set PYTHONUTF8=1`
 - `main.py` voice mode (90 s, `timeout 90`): OK. Greeting spoken; "what are you doing" and "what" answered by voice. GPU not sampled during this run (sampler race); CUDA disabled via env.
 - Gotcha: in bash, `cd x && (...) &` backgrounds the cd too. Put `cd` on its own line before background jobs.
 - Lumo timings (dev laptop, on battery): see `results/lumo_dev_timings.md`. Median end-of-speech to first audio about 10.7 s; first LLM token about 6.6 s looks slow, re-run plugged in.
+
+## Snapshot (PROJECT_SNAPSHOT.md)
+- `baselines/lumo/.venv/Scripts/python.exe bench/snapshot_harness.py` runs the UNMODIFIED main.py with a fake real-time mic + timing hooks; writes `results/snapshot_timings.md` and `results/raw/snapshot_events.json`. Plugged in: median end-of-speech -> first audio 12.6 s, worst 15.2 s.
+- Problem solved: ctypes `GetProcessTimes` needs `argtypes` (HANDLE) or it raises OverflowError on the pseudo-handle.
+- Mistake fixed: an earlier GPU-sampling loop left `results_gpu_tmp.txt` in the repo; removed.
