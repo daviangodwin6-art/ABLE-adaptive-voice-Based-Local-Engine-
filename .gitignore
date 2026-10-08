@@ -18,6 +18,9 @@ baselines/lumo/
 # Raw benchmark output (tables and plots in results/ are committed)
 results/raw/
 
+# Demo page dependencies (cd demo ; npm install)
+node_modules/
+
 # Python
 __pycache__/
 *.pyc

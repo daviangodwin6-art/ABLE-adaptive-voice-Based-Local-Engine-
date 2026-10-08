@@ -25,6 +25,8 @@ AUDIO = ROOT / "bench" / "test_audio"
 RATE, BLOCK = 16000, 8000  # main.py: RATE and blocksize
 QUESTIONS = ["What is the capital of France", "How many days are there in a week", "Tell me a short joke",
              "Why is the sky blue", "Who wrote the play Romeo and Juliet"]
+if os.environ.get("BENCH_LONG"):  # set BENCH_LONG=1 to add three questions that need longer answers
+    QUESTIONS += ["Explain how a rainbow forms", "Give me three tips for studying", "What is photosynthesis"]
 LEAD_S = 0.3
 
 t_zero = time.perf_counter()
@@ -113,8 +115,9 @@ def gpu_loop():
 
 
 # ---------- fake microphone ----------
-g = {"__name__": "__main__", "__file__": str(LUMO / "main.py")}
-state = {"plays": 0, "q": -1}
+g = {"__name__": "__main__", "__file__": str(LUMO / "main.py"),
+     "timing_event": lambda name, **kw: ev(name, **kw)}  # jarvis_v1 reports "sentence" events through this
+state = {"plays": 0, "q": -1, "counted": False}  # plays = replies whose playback has started (not WAV files)
 
 
 class FakeStream:
@@ -180,6 +183,7 @@ def install():
             t0 = time.perf_counter()
             r = super().Result()
             ev("result", t0=t0, text=json.loads(r).get("text", ""))
+            state["counted"] = False  # the next PlaySound belongs to a new reply
             return r
     vosk.KaldiRecognizer = KR
     orig_model = vosk.Model.__init__
@@ -208,10 +212,20 @@ def install():
         k["callback"] = cb
         ptok[0] = 0
         ev("llm_start", prompt_chars=len(prompt))
+        def end(reply):
+            ev("llm_end", tokens=cnt[0], reply=reply, prompt_tokens=ptok[0], n_past=self.model.context.n_past,
+               kwargs=repr({a: b for a, b in k.items() if a != "callback"}))
         out = orig_gen(self, prompt, **k)
-        ev("llm_end", tokens=cnt[0], reply=out, prompt_tokens=ptok[0], n_past=self.model.context.n_past,
-           kwargs=repr({a: b for a, b in k.items() if a != "callback"}))
-        return out
+        if isinstance(out, str):
+            end(out)
+            return out
+        def stream():  # streaming=True returns a generator: the LLM ends when it is exhausted
+            parts = []
+            for piece in out:
+                parts.append(piece)
+                yield piece
+            end("".join(parts))
+        return stream()
     gpt4all.GPT4All.__init__, gpt4all.GPT4All.generate = init, gen
 
     def run(*a, **k):
@@ -223,7 +237,11 @@ def install():
         with wave.open(path) as w:
             dur = w.getnframes() / w.getframerate(); sr = w.getframerate()
         ev("play", audio_s=dur, sample_rate=sr)
-        state["plays"] += 1  # audio intentionally not played
+        if not state["counted"]:
+            state["plays"] += 1
+            state["counted"] = True
+        time.sleep(dur)  # audio is not played, but the call blocks for as long as the real one would
+        ev("play_end")
     winsound.PlaySound = play
 
 
@@ -239,14 +257,26 @@ def finish():
             if e["name"] == name and e["t"] >= after and all(e.get(a) == b for a, b in match.items()):
                 return e
     rows = []
-    for e in [x for x in E if x["name"] == "speech_end"]:
+    ends = [x for x in E if x["name"] == "speech_end"]
+    for i, e in enumerate(ends):
         a = first("accept_true", e["t"] - 0.01)
         r = first("result", a["t"])
         ls, ft_, le = first("llm_start", r["t"]), None, None
         ft_ = first("first_token", ls["t"]); le = first("llm_end", ls["t"])
-        ts, te = first("tts_start", le["t"]), None
+        ts, te = first("tts_start", ls["t"]), None  # with streaming the first Piper run starts before the LLM ends
         te = first("tts_end", ts["t"]); pl = first("play", te["t"])
+        # everything this reply did, up to the next question
+        until = ends[i + 1]["t"] if i + 1 < len(ends) else float("inf")
+        W = lambda name: [x for x in E if x["name"] == name and ls["t"] <= x["t"] < until]
+        plays, play_ends, sents = W("play"), W("play_end"), W("sentence")
+        rel = lambda x: (x["t"] - r["t"]) * 1000  # ms after the recognised text
         rows.append({
+            "n_sentences": len(plays),
+            "first_sentence_ms": rel(sents[0]) if sents else None,  # None when not streaming
+            "first_tts_start_ms": rel(ts), "first_tts_end_ms": rel(te),
+            "last_play_end_ms": rel(play_ends[-1]),
+            "gaps_ms": [(p["t"] - pe["t"]) * 1000 for pe, p in zip(play_ends, plays[1:])],  # silence between sentences
+            "reply_audio_s": sum(p["audio_s"] for p in plays),
             "q": e["q"] + 1, "text": r["text"], "reply": le["reply"].strip(), "tokens": le["tokens"],
             "endpoint_wait_ms": (a["t0"] - e["t"]) * 1000,
             "final_accept_ms": (a["t"] - a["t0"]) * 1000,
@@ -259,10 +289,10 @@ def finish():
             "tts_ms": (te["t"] - ts["t"]) * 1000,
             "text_to_first_audio_ms": (pl["t"] - r["t"]) * 1000,
             "speech_end_to_first_audio_ms": (pl["t"] - e["t"]) * 1000,
-            "win": (a["t0"], pl["t"]), "prompt_chars": ls["prompt_chars"], "audio_s": pl["audio_s"],
+            "win": (a["t0"], play_ends[-1]["t"]), "prompt_chars": ls["prompt_chars"], "audio_s": pl["audio_s"],
             "sample_rate": pl["sample_rate"], "prompt_tokens": le["prompt_tokens"], "n_past": le["n_past"],
             "ends_sentence": le["reply"].strip().endswith((".", "!", "?"))})
-    # resources over each reply window (accept_true -> first audio)
+    # resources over each reply window (accept_true -> end of the reply's last playback)
     S = res_samples
     for r in rows:
         w = [s for s in S if r["win"][0] <= s[0] <= r["win"][1]]
@@ -317,6 +347,8 @@ if __name__ == "__main__":
     if ARGS.tuning:
         os.environ["JARVIS_TUNING"] = ARGS.tuning
     os.chdir(LUMO)  # Lumo uses relative paths; ours uses absolute ones, so this is harmless for v0/v1
+    for i in range(len(QUESTIONS)):
+        load_q(i)  # make missing question WAVs now, not in the middle of the timed run
     install()
     threading.Thread(target=res_loop, daemon=True).start()
     threading.Thread(target=gpu_loop, daemon=True).start()

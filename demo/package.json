@@ -1,0 +1,9 @@
+{
+  "name": "able-demo",
+  "private": true,
+  "description": "React for demo/web_demo.py. Pinned to 18.x: React 19 no longer ships the browser (UMD) builds we serve.",
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

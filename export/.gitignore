@@ -1,0 +1,3 @@
+# Built by scripts/make_export.ps1: holds models and binaries, never commit
+ABLE_test_package/
+ABLE_test_package.zip

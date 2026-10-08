@@ -1,0 +1,12 @@
+# Experiment toggles for pipeline/jarvis_v1.py. Read with Python's built-in tomllib (no dependencies).
+# Unknown keys are rejected. The values below are the v0 defaults: with them v1 behaves exactly like jarvis_v0.py.
+# bench/ablate.py overrides single keys per run through the JARVIS_TUNING env variable (a JSON object).
+
+n_batch = 8                 # prompt tokens evaluated per llama.cpp batch
+n_threads = 4               # LLM threads. Machine-specific: re-tune on the demo laptop
+max_tokens = 80
+history_turns = 4           # history LINES put in the prompt, counting the current "User:" line (3 = last exchange + question)
+prompt_style = "v0"         # "v0" (Lumo's wording) | "short" | "tiny" (shortest prompt, last exchange only if short)
+stream = false              # speak sentence by sentence while the LLM is still writing (E3)
+max_first_chunk_words = 12  # stream only: cut the first chunk at a comma after this many words
+length_scale = 1.0          # Piper speech length: below 1.0 is faster (0.88 = about 14 % faster)

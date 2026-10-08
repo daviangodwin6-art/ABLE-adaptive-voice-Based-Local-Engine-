@@ -51,4 +51,27 @@ Run from `baselines/lumo` with `set CUDA_VISIBLE_DEVICES=-1`, `set PYTHONUTF8=1`
   - Gate A: `.\baselines\lumo\.venv\Scripts\python.exe bench\ablate.py --passes 3 --md results\gate_a.md --cfg "lumo|lumo|" --cfg "v0|v0|"`
 - Prompt tokens are counted exactly: a wrapper on `LLModel._prompt_callback` (called once per prompt token); it equals `context.n_past - generated tokens` on every question.
 - Result (`results/gate_a.md`, plugged in): Lumo median E 12.9 s, v0 12.0 s; time per prompt token identical (97 vs 98 ms).
+## Step B - jarvis_v1 (config-driven) and ablation
+- `pipeline/jarvis_v1.py` = copy of v0 + toggles from `config/pipeline.toml` (TOML, stdlib `tomllib`, because persona.toml has lists; unknown keys are rejected). `jarvis_v0.py` stays frozen.
+- One toggle per run without editing the file: `--cfg "label|v1|{\"n_batch\": 128}"` (sent as `JARVIS_TUNING`).
+- Regression check (v1 at v0 defaults vs v0, 3 interleaved passes, plugged in): `.\baselines\lumo\.venv\Scripts\python.exe bench\ablate.py --passes 3 --md results\ablation.md --cfg "v0_chk|v0|" --cfg "v1_defaults|v1|"` -> median E 12317 (v0) vs 12435 ms (v1), same prompt tokens.
+- Splitter tests (no pytest needed): `.\baselines\lumo\.venv\Scripts\python.exe tests\test_sentence_splitter.py`
+- `ablate.py` skips passes whose JSON already exists in `results/raw/passes`; delete them to re-measure.
+
+## Demo page (live view in a browser)
+- Once (needs internet, 4.7 MB, React 18.3.1 from the npm registry): `cd demo ; npm install`
+- Run from the project root: `.\baselines\lumo\.venv\Scripts\python.exe demo\web_demo.py` then open `http://localhost:8765` and press **Start ABLE** (the voice loop only starts on the button). Say "exit" to stop the loop (the button returns), Ctrl+C to quit the server.
+- The demo applies the tuned E1 + E2 + E3 settings by default (stream on). A non-empty `JARVIS_TUNING` overrides them; `pipeline.toml` keeps the v0 defaults for benchmarks.
+- It runs `jarvis_v1.py` unchanged (real mic and speakers) with the settings in `config/pipeline.toml` (the slow v0 defaults). Do not run it during a benchmark: it uses the same CPU cores.
+- Tuned version (E1 + E2 + streaming) without editing the config, PowerShell, same terminal: `$env:JARVIS_TUNING='{"n_batch":128,"n_threads":5,"history_turns":3,"max_tokens":60,"prompt_style":"short","stream":true}'` then the run command. Back to the original: `$env:JARVIS_TUNING=''`.
+
+## E1 / E2 / E3 (results/ablation.md)
+- Winners on the dev laptop: `n_batch` 128, 5 threads (re-tune threads on the demo laptop), short prompt, `history_turns` 3, `max_tokens` 60, `stream` true.
+- E3 run (8 questions, playback simulated in real time): `$env:BENCH_LONG='1'` then `bench\ablate.py --passes 3 --cfg 'e3_off|v1|{...\"stream\": false}' --cfg 'e3_on|v1|{...\"stream\": true}'`; per-question table: `bench\e3_report.py e3_off e3_on`.
+- In Windows PowerShell 5.1 the JSON inside `--cfg` needs `\"`; in VS Code put `--%` right after `python.exe` and use `"...{\"key\": 1}"`.
+- Streaming code: `speak_streaming()` in `jarvis_v1.py` (LLM thread -> `pipeline/sentence_splitter.py` -> Piper thread, one WAV per sentence -> playback in the main thread).
+- Problem solved: numbered lists ("1. Break down ...") were split after "1." and spoken as a separate clip with a 2 s pause; a number alone before the dot is now treated as a list marker (test added).
+- The harness now sleeps for the audio length in its fake `PlaySound`, so passes take longer than before; E (time of the first `PlaySound` call) is not affected.
+
+## Step A notes
 - Problem solved: harness `--out` was relative and the harness does `chdir` into baselines/lumo, so a `results/` folder appeared inside Lumo. Fixed by resolving the path first; stray folder deleted.

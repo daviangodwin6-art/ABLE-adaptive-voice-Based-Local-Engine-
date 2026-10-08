@@ -85,7 +85,7 @@ def main():
     L, pp = table(labels)
     md = [f"# {a.title}", "", "**DEVELOPMENT LAPTOP - NOT FINAL NUMBERS.** Synthetic Piper speech, fake real-time mic, audio not played "
           "(first audio = `PlaySound` call). Each cell is `median / worst` in ms over all questions of all passes "
-          "(n = 5 questions x passes). Peaks are the maximum over all replies.", ""] + L + [""] + pp
+          "(n = questions x passes). Peaks are the maximum over all replies.", ""] + L + [""] + pp
     print("\n".join(md))
     if a.md:
         Path(a.md).write_text("\n".join(md) + "\n", encoding="utf-8")
