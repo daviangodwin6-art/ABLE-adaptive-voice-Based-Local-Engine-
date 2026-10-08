@@ -37,11 +37,13 @@ for _k, _v in _tuning.items():
     if type(_v) is not type(PIPE[_k]):
         raise SystemExit(f"Pipeline setting {_k!r} must be {type(PIPE[_k]).__name__}, got {_v!r}")
 PIPE.update(_tuning)
-_KEYS = {"n_batch", "n_threads", "max_tokens", "history_turns", "prompt_style", "stream", "max_first_chunk_words", "length_scale", "stt_model", "min_conf", "noise_gate", "mic_device", "end_silence_ms", "stt_engine", "whisper_model"}
+_KEYS = {"n_batch", "n_threads", "max_tokens", "history_turns", "prompt_style", "stream", "max_first_chunk_words", "length_scale", "stt_model", "min_conf", "noise_gate", "mic_device", "end_silence_ms", "stt_engine", "whisper_model", "llm_backend", "llm_model"}
 if set(PIPE) != _KEYS:
     raise SystemExit(f"config/pipeline.toml: unknown or missing keys: {sorted(set(PIPE) ^ _KEYS)}")
 if PIPE["stt_engine"] not in ("vosk", "whisper"):
     raise SystemExit(f"stt_engine must be 'vosk' or 'whisper', got {PIPE['stt_engine']!r}")
+if PIPE["llm_backend"] not in ("gpt4all", "llama_cpp"):
+    raise SystemExit(f"llm_backend must be 'gpt4all' or 'llama_cpp', got {PIPE['llm_backend']!r}")
 if PIPE["prompt_style"] not in ("v0", "short", "tiny"):
     raise SystemExit(f"prompt_style must be 'v0', 'short' or 'tiny', got {PIPE['prompt_style']!r}")
 
@@ -82,12 +84,16 @@ else:
     rec.SetWords(True)  # word confidences for min_conf
 
 # LLM - using local GGUF model for offline operation
-llm = GPT4All(
-    model_name="orca-mini-3b-gguf2-q4_0.gguf",
-    model_path=str(LUMO / "models/llm"),  # Local path to model
-    allow_download=False,     # Prevent internet access
-    n_threads=PIPE["n_threads"]
-)
+if PIPE["llm_backend"] == "llama_cpp":  # newer architectures (Gemma 3) that gpt4all's llama.cpp cannot load
+    from llm_backend import LlamaCppLLM
+    llm = LlamaCppLLM(PIPE["llm_model"], str(LUMO / "models/llm"), n_threads=PIPE["n_threads"], n_batch=PIPE["n_batch"])
+else:
+    llm = GPT4All(
+        model_name=PIPE["llm_model"],
+        model_path=str(LUMO / "models/llm"),  # Local path to model
+        allow_download=False,     # Prevent internet access
+        n_threads=PIPE["n_threads"]
+    )
 
 # Conversation history for context
 conversation_history = []
@@ -242,41 +248,18 @@ def speak_streaming(tokens):
 print(f"[*] {CFG['name']} is starting...")
 print(f"🤖 {GREETING_MESSAGE}")
 
-TEST_FILE = os.environ.get("JARVIS_TEST_FILE")  # test mode: a recording replaces the microphone (demo page "Test with an audio file", bench/audio_test.py)
-test_done = threading.Event()
-
-class FileStream:
-    """Stands in for sd.RawInputStream: plays a recording into audio_q in real time, then silence, like a live mic.
-    Audio that arrives while ABLE speaks is dropped, exactly as the real callback does."""
-    def __init__(self, path):
-        from audio_file import load_pcm16k
-        self.pcm = load_pcm16k(path) + bytes(RATE * 2 * 3)  # 3 s of silence at the end lets the last phrase finish
-    def __enter__(self):
-        def feed():
-            step = 3200 * 2  # 0.2 s, like the live blocksize
-            for i in range(0, len(self.pcm), step):
-                if not is_speaking:
-                    audio_q.put(self.pcm[i:i + step])
-                time.sleep(0.2)
-            test_done.set()
-        threading.Thread(target=feed, daemon=True).start()
-        return self
-    def __exit__(self, *a):
-        return False
-
-if not TEST_FILE:
-    # Speak the startup greeting
-    speak(GREETING_MESSAGE)
+# Speak the startup greeting
+speak(GREETING_MESSAGE)
 
 print(f"[*] {CFG['name']} is listening... (say 'exit' or 'quit' to stop)")
 
 floor, voiced, quiet_ms = 60.0, False, 0
 utter, prebuf = [], collections.deque(maxlen=3)
-with (FileStream(TEST_FILE) if TEST_FILE else sd.RawInputStream(
+with sd.RawInputStream(
     samplerate=RATE, blocksize=3200,  # 0.2 s: fine enough for our own end-of-speech detection
     dtype='int16', channels=1, callback=audio_callback,
     device=PIPE["mic_device"] or None
-)):
+):
     while True:
         if is_speaking:
             time.sleep(0.1)
@@ -286,9 +269,6 @@ with (FileStream(TEST_FILE) if TEST_FILE else sd.RawInputStream(
         try:
             data = audio_q.get(timeout=0.5)
         except queue.Empty:
-            if test_done.is_set():
-                print("[*] Test recording finished.")
-                break
             continue
         # Own end-of-speech detection: Vosk waits too long for silence in a noisy room and merges two questions.
         level = float(np.sqrt(np.mean(np.frombuffer(data, np.int16).astype(np.float64) ** 2)))

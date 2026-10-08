@@ -24,3 +24,6 @@ node_modules/
 # Python
 __pycache__/
 *.pyc
+
+# Vite dev cache (demo/ui/dist is committed so the demo runs without npm)
+demo/ui/.vite/

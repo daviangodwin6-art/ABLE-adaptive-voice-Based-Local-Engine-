@@ -77,14 +77,16 @@ Run from `baselines/lumo` with `set CUDA_VISIBLE_DEVICES=-1`, `set PYTHONUTF8=1`
 ## Step A notes
 - Problem solved: harness `--out` was relative and the harness does `chdir` into baselines/lumo, so a `results/` folder appeared inside Lumo. Fixed by resolving the path first; stray folder deleted.
 
-## Test with a recording (no microphone)
-- Once: `baselines\lumo\.venv\Scripts\pip install miniaudio` (pinned in `scripts/lumo_requirements.lock.txt`; decodes mp3/wav/flac/ogg, no ffmpeg).
-- CLI: `.\baselines\lumo\.venv\Scripts\python.exe bench\audio_test.py recording.mp3` prints `You:` / `ABLE:` lines; `--tuning '{...}'` overrides the demo settings (e.g. compare the two Vosk models on the same file).
-- Demo page: "Test with an audio file" next to Start ABLE (upload is saved as `results/raw/test_upload.<ext>`, max 20 MB). The loop plays the file in real time, answers, then stops by itself.
-- Mechanism: env `JARVIS_TEST_FILE` makes `jarvis_v1.py` use `FileStream` instead of the microphone and skip the greeting. Unset = normal live mode.
+## Demo page: Terminate, microphone, stage sync
+- **Terminate** (top-right of the ABLE reply box and of the "currently speaking" box) cuts the reply in progress: the LLM stops, no more voice clips, the playing clip is stopped; the loop goes back to listening. It does not stop the loop ("exit" does). `POST /skip` in `demo/web_demo.py`.
+- Microphone: every **Start** restarts PortAudio, so the loop uses the input device Windows has selected at that moment (name shown under the mic button). Changed the device while running: say "exit", press Start. `mic_device` in `config/pipeline.toml` still overrides it.
+- The page shows a **Transcribing** stage (Whisper) and counts it in "Time to First Sound", so that number is higher than before this change. The 700 ms end-of-speech wait before it is not counted.
+- Removed: testing with a recorded audio file (`bench/audio_test.py`, `pipeline/audio_file.py`, upload on the demo page, `JARVIS_TEST_FILE`). `miniaudio` is no longer used.
+- After editing `demo/ui/src`: `cd demo\ui ; npm run build` (the server serves `demo/ui/dist`).
+- Check: `.\baselines\lumo\.venv\Scripts\python.exe tests\test_web_demo.py`
+- Problems solved: a short phrase ("hi", "ok") left the page on "Thinking"; a stage stayed lit after "exit"; the pause after speaking showed "Thinking".
 
 ## Whisper speech recognition (stt_engine)
-- `stt_engine = "whisper"` (the demo and `bench/audio_test.py` default) uses faster-whisper `base.en`, int8, CPU; `"vosk"` keeps the old recognizer. Model `whisper-base.en` (141 MB, Systran/faster-whisper-base.en from Hugging Face) is in `baselines/lumo/models/stt/`; packages `faster-whisper` etc. are in the Lumo venv and `scripts/lumo_requirements.lock.txt`.
+- `stt_engine = "whisper"` (the demo default) uses faster-whisper `base.en`, int8, CPU; `"vosk"` keeps the old recognizer. Model `whisper-base.en` (141 MB, Systran/faster-whisper-base.en from Hugging Face) is in `baselines/lumo/models/stt/`; packages `faster-whisper` etc. are in the Lumo venv and `scripts/lumo_requirements.lock.txt`.
 - Whisper is not streaming: our own end-of-speech detection (`end_silence_ms`, 700 ms default) cuts the phrase, which is then transcribed in one go (Whisper's built-in Silero VAD removes silence inside it). Text is lowercased and stripped of punctuation so exit/greeting matching behaves as with Vosk; `min_conf` uses exp(avg_logprob) of the segments.
 - Problem solved: the background-level estimate started at the first audio block; a recording that starts with speech was never detected. It now starts at a typical quiet level (60).
-- Check: `bench\audio_test.py bench\test_audio\snap_q1.wav` ... all five snapshot questions are heard correctly with Whisper.

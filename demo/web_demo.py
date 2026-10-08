@@ -10,13 +10,14 @@ the reply as it is written, and the timings of every turn. Settings come from co
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # never touch the GPU
 
-import json, subprocess, sys, threading, time
+import json, mimetypes, subprocess, sys, threading, time, wave
 # E1 + E2 + E3 winners (results/ablation.md). The demo uses them unless JARVIS_TUNING is set to something non-empty; pipeline.toml keeps the v0 defaults.
 if not os.environ.get("JARVIS_TUNING"):
     os.environ["JARVIS_TUNING"] = json.dumps({"n_batch": 128, "n_threads": 5, "history_turns": 3,
                                               "max_tokens": 100, "min_conf": 0.5, "end_silence_ms": 700, "prompt_style": "tiny", "stream": True, "length_scale": 0.88,
                                               "stt_model": "vosk-model-small-en-us-0.15",
-                                              "stt_engine": "whisper", "whisper_model": "whisper-base.en"})
+                                              "stt_engine": "whisper", "whisper_model": "whisper-base.en",
+                                              "llm_backend": "llama_cpp", "llm_model": "gemma-3-1b-it-Q4_0.gguf"})
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -27,10 +28,12 @@ TARGET = ROOT / "pipeline" / "jarvis_v1.py"
 PORT = 8765
 
 lock = threading.Lock()
-READ, WRITE, VOICE, SPEAK = "Reading the prompt", "Writing the reply", "Making the voice", "Speaking"
+HEAR, READ, WRITE, VOICE, SPEAK = "Transcribing", "Reading the prompt", "Writing the reply", "Making the voice", "Speaking"
 # "on" holds every stage active right now: with streaming several are lit at once, which is the point.
+# "skip" is the Terminate button: the reply in progress is cut (no more tokens, voice clips or playback) until the next turn.
 S = {"on": set(), "turns": [{"heard": "(start-up greeting)", "reply": "", "t": time.perf_counter()}]}
 g = {"__name__": "__main__", "__file__": str(TARGET)}
+PLAY_PAD_S = 0.05  # wait this long past the clip length before the next clip: raise it if sentence ends sound clipped on your speakers
 
 
 def mark(on=(), off=(), first=None, **fields):
@@ -47,12 +50,33 @@ def since_turn():
     return round((time.perf_counter() - S["turns"][-1]["t"]) * 1000)
 
 
+def new_turn(text):
+    """A recognised phrase starts a turn. With Whisper the clock starts where transcription started, so it is counted."""
+    now = time.perf_counter()
+    with lock:
+        t0 = S.pop("asr_t0", None)
+        turn = {"heard": text, "reply": "", "t": t0 or now}
+        if t0:
+            turn["asr_ms"] = round((now - t0) * 1000)
+        S["turns"].append(turn)
+        S["on"] = {READ}
+        S["skip"] = False
+
+
 def heard_event(name, **kw):
     """Whisper engine: jarvis_v1 reports the recognised phrase here (Vosk is hooked in install())."""
-    if name == "heard":
-        with lock:
-            S["turns"].append({"heard": kw["text"], "reply": "", "t": time.perf_counter()})
-            S["on"] = {READ}
+    if name == "heard" and len(kw["text"]) >= 3:  # the loop drops shorter phrases right after reporting them
+        new_turn(kw["text"])
+
+
+def state():
+    """/state as JSON text. No stage is lit unless the loop runs; with nothing else on, it is loading, speaking (mic muted) or listening."""
+    with lock:
+        run = bool(S.get("running"))
+        idle = "Loading models" if "llm" not in g else "Speaking" if g.get("is_speaking") else "Listening"
+        return json.dumps({"on": (sorted(S["on"]) or [idle]) if run else [], "turns": S["turns"], "settings": g.get("PIPE", {}),
+                           "running": run, "error": S.get("error", ""),
+                           "mic": g.get("PIPE", {}).get("mic_device") or S.get("mic", "")})
 
 
 def start():
@@ -62,8 +86,18 @@ def start():
             return False
         S["running"] = True
         S["on"] = set()
+        S["skip"] = False
         g.clear()
         g.update({"__name__": "__main__", "__file__": str(TARGET), "timing_event": heard_event})
+    try:
+        # PortAudio reads the device list once: restart it so the loop gets the microphone Windows uses NOW
+        # (a headset plugged in after this server started). Safe here: no stream is open between runs.
+        import sounddevice as sd
+        sd._terminate()
+        sd._initialize()
+        S["mic"] = sd.query_devices(kind="input")["name"]
+    except Exception as e:  # no microphone at all: the loop reports its own error
+        S["mic"] = f"(none: {e})"
 
     def go():
         try:
@@ -72,6 +106,7 @@ def start():
             S["error"] = repr(e)
         finally:
             S["running"] = False
+            S["on"] = set()
     threading.Thread(target=go, daemon=True).start()
     return True
 
@@ -89,36 +124,58 @@ def install():
             res = json.loads(r)
             text = fix_asr(res.get("text", "").strip())
             if len(text) >= 3 and is_confident(res, g.get("PIPE", {}).get("min_conf", 0.0)):  # same noise filter as the loop
-                with lock:
-                    S["turns"].append({"heard": text, "reply": "", "t": time.perf_counter()})
-                    S["on"] = {READ}
+                new_turn(text)
             return r
     vosk.KaldiRecognizer = KR
 
+    try:
+        import faster_whisper
+        orig_tr = faster_whisper.WhisperModel.transcribe
+        def transcribe(self, *a, **k):
+            S["asr_t0"] = time.perf_counter()
+            mark(on=[HEAR])
+            segs, info = orig_tr(self, *a, **k)
+            def shown():  # the segments are decoded while the loop reads them: done when exhausted
+                try:
+                    yield from segs
+                finally:
+                    mark(off=[HEAR])
+            return shown(), info
+        faster_whisper.WhisperModel.transcribe = transcribe
+    except ImportError:  # Vosk-only install
+        pass
+
     import gpt4all
-    orig_gen = gpt4all.GPT4All.generate
-    def gen(self, prompt, **k):
-        n = [0]
-        def cb(token_id, response):
-            n[0] += 1
-            text = S["turns"][-1]["reply"] + response
-            cut = cut_role_echo(text, g.get("CFG", {}).get("name", "ABLE"))
-            mark(on=[WRITE], off=[READ], first={"first_token_ms": since_turn()}, tokens=n[0], reply=cut)
-            return cut == text  # False stops the LLM when it starts writing the next "User:" line
-        out = orig_gen(self, prompt, callback=cb, **k)
-        if isinstance(out, str):
-            mark(off=[READ, WRITE])
-            return out
-        def stream():  # streaming=True returns a generator: the LLM is done when it is exhausted
-            yield from out
-            mark(off=[READ, WRITE])
-        return stream()
-    gpt4all.GPT4All.generate = gen
+    from llm_backend import LlamaCppLLM
+    def wrap(orig_gen):
+        def gen(self, prompt, **k):
+            n = [0]
+            def cb(token_id, response):
+                n[0] += 1
+                text = S["turns"][-1]["reply"] + response
+                cut = cut_role_echo(text, g.get("CFG", {}).get("name", "ABLE"))
+                mark(on=[WRITE], off=[READ], first={"first_token_ms": since_turn()}, tokens=n[0], reply=cut)
+                return cut == text and not S.get("skip")  # False stops the LLM: it starts the next "User:" line, or Terminate
+            out = orig_gen(self, prompt, callback=cb, **k)
+            if isinstance(out, str):
+                mark(off=[READ, WRITE])
+                return out
+            def stream():  # streaming=True returns a generator: the LLM is done when it is exhausted, closed early or fails
+                try:
+                    yield from out
+                finally:
+                    mark(off=[READ, WRITE])
+            return stream()
+        return gen
+    for cls in (gpt4all.GPT4All, LlamaCppLLM):  # same view whichever LLM backend pipeline.toml picks
+        cls.generate = wrap(cls.generate)
 
     orig_run = subprocess.run
     def run(cmd, *a, **k):
         if "piper" not in str(cmd):
             return orig_run(cmd, *a, **k)
+        if S.get("skip"):  # Terminate: no more voice clips (the loop's TTS worker ends on a failed Piper call)
+            return subprocess.CompletedProcess(cmd, 1, b"", b"terminated")
         t0 = time.perf_counter()
         fields = {} if S["turns"][-1]["reply"] else {"reply": str(cmd).split(" | ")[0][5:]}  # fixed greeting: no LLM
         if fields:
@@ -132,8 +189,18 @@ def install():
     import winsound
     orig_play = winsound.PlaySound
     def play(path, flags):
+        if S.get("skip"):
+            return
         mark(on=[SPEAK], first={"first_audio_ms": since_turn()}, sentences=S["turns"][-1].get("sentences", 0) + 1)
-        orig_play(path, flags)
+        # Played asynchronously and waited for here: a synchronous PlaySound cannot be stopped from another thread
+        # (stopping it blocks until the clip ends), so Terminate would not cut the sound.
+        with wave.open(path) as w:
+            end = time.perf_counter() + w.getnframes() / w.getframerate() + PLAY_PAD_S
+        orig_play(path, flags | winsound.SND_ASYNC)
+        while time.perf_counter() < end and not S.get("skip"):
+            time.sleep(0.02)
+        if S.get("skip"):
+            orig_play(None, 0)  # stop the clip now
         mark(off=[SPEAK])
     winsound.PlaySound = play
 
@@ -156,7 +223,7 @@ h1{font-size:20px;margin:0 0 4px}small,.dim{color:#999}
 <script>
 // Plain React.createElement (no JSX), so there is no build step.
 const h=React.createElement;
-const STAGES=["Loading models","Listening","Reading the prompt","Writing the reply","Making the voice","Speaking"];
+const STAGES=["Loading models","Listening","Transcribing","Reading the prompt","Writing the reply","Making the voice","Speaking"];
 const sec=ms=>(ms/1000).toFixed(1)+" s";
 
 function Turn({t}){
@@ -175,7 +242,6 @@ function Turn({t}){
 
 function App(){
   const [s,setS]=React.useState(null);
-  const [mode,setMode]=React.useState("mic");
   const btn={font:"inherit",padding:"8px 18px",borderRadius:6,border:0,color:"#fff"};
   React.useEffect(()=>{
     const id=setInterval(async()=>{try{setS(await(await fetch("/state")).json())}catch(e){}},300);
@@ -185,13 +251,11 @@ function App(){
   return h(React.Fragment,null,
     h("h1",null,"ABLE - offline voice assistant"),
     h("div",{style:{margin:"8px 0",display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}},
-      [["mic","Mic"],["file","Recorded audio"]].map(([m,label])=>h("button",{key:m,disabled:s.running,onClick:()=>{setMode(m);if(m==="mic")fetch("/run",{method:"POST"});},
-        style:{...btn,background:s.running?"#333":mode===m?"#2e7d32":"#444",cursor:s.running?"default":"pointer"}},label)),
+      h("button",{disabled:s.running,onClick:()=>fetch("/run",{method:"POST"}),
+        style:{...btn,background:s.running?"#333":"#2e7d32",cursor:s.running?"default":"pointer"}},"Start ABLE"),
       s.running&&h("span",{className:"dim"},"Running (say exit to stop)"),
-      mode==="file"&&!s.running&&h("label",{style:{...btn,background:"#1565c0",cursor:"pointer"}},"Upload audio (mp3/wav) and run",
-        h("input",{type:"file",accept:"audio/*",style:{display:"none"},onChange:async e=>{
-          const f=e.target.files[0];if(!f)return;
-          await fetch("/test",{method:"POST",headers:{"X-Filename":f.name},body:f});e.target.value="";}}))),
+      s.running&&h("button",{onClick:()=>fetch("/skip",{method:"POST"}),style:{...btn,background:"#c62828",cursor:"pointer"}},"Terminate reply"),
+      s.mic&&h("span",{className:"dim"},"Mic: "+s.mic)),
     s.error&&h("div",{style:{color:"#ef5350"}},"Stopped: "+s.error),
     h("div",null,h("small",null,Object.entries(s.settings).map(([k,v])=>k+"="+v).join("   "))),
     h("div",{id:"stages"},STAGES.map(n=>h("span",{key:n,className:"st"+(s.on.includes(n)?" on":"")},n))),
@@ -208,18 +272,21 @@ REACT = {"/react.js": NPM / "react/umd/react.production.min.js",
          "/react-dom.js": NPM / "react-dom/umd/react-dom.production.min.js"}
 
 
+UI = (Path(__file__).resolve().parent / "ui" / "dist").resolve()  # built once with: cd demo\ui ; npm install ; npm run build
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/state":
-            with lock:
-                idle = "Listening" if "llm" in g and not g.get("is_speaking") else "Loading models" if "llm" not in g else ""
-                run = bool(S.get("running"))
-                state = {"on": sorted(S["on"]) or ([idle] if run else []), "turns": S["turns"], "settings": g.get("PIPE", {}),
-                         "running": run, "error": S.get("error", "")}
-                body, ctype = json.dumps(state).encode(), "application/json"
+            body, ctype = state().encode(), "application/json"
         elif self.path in REACT:
             body, ctype = REACT[self.path].read_bytes(), "text/javascript"
-        else:
+        elif (UI / "index.html").exists():  # the built React UI (demo/ui); unknown paths get index.html
+            f = (UI / self.path.split("?")[0].lstrip("/")).resolve()
+            if not (f.is_file() and UI in f.parents):  # also blocks ../ paths
+                f = UI / "index.html"
+            body, ctype = f.read_bytes(), mimetypes.guess_type(f.name)[0] or "application/octet-stream"
+        else:  # UI not built yet: the old single-page view
             body, ctype = PAGE.encode(), "text/html; charset=utf-8"
         self.send_response(200)
         self.send_header("Content-Type", ctype)
@@ -228,26 +295,11 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_POST(self):
-        if self.path == "/test":  # recorded audio instead of the microphone (pipeline/jarvis_v1.py test mode)
-            n = int(self.headers.get("Content-Length", 0))
-            ext = Path(self.headers.get("X-Filename", "a.mp3")).suffix.lower()
-            if n > 20_000_000 or ext not in (".mp3", ".wav", ".flac", ".ogg") or S.get("running"):
-                self.send_response(400)
-                self.end_headers()
-                return
-            path = ROOT / "results" / "raw" / f"test_upload{ext}"
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(self.rfile.read(n))
-            S.pop("error", None)
-            os.environ["JARVIS_TEST_FILE"] = str(path)
-            start()
-            self.send_response(204)
-            self.end_headers()
-            return
         if self.path == "/run":
             S.pop("error", None)
-            os.environ.pop("JARVIS_TEST_FILE", None)  # live microphone
             start()
+        elif self.path == "/skip" and S.get("running"):  # Terminate button: cut the reply in progress, keep the loop
+            S["skip"] = True  # the hooks in install() see it: LLM callback, Piper, playback
         self.send_response(204)
         self.end_headers()
 
@@ -257,8 +309,10 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # the loop prints an emoji
-    if not all(p.exists() for p in REACT.values()):
-        raise SystemExit("React is not installed. Run once (needs internet):  cd demo ; npm install")
+    if not (UI / "index.html").exists():
+        print("[!] New UI is not built, showing the old page. Build once:  cd demo/ui ; npm install ; npm run build")
+        if not all(p.exists() for p in REACT.values()):
+            raise SystemExit("React is not installed. Run once (needs internet):  cd demo ; npm install")
     install()
     print(f"[*] Live view: http://127.0.0.1:{PORT}  (press Start ABLE on the page; Ctrl+C here to quit)")
     try:

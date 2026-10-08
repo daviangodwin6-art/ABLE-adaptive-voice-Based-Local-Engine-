@@ -16,4 +16,6 @@ noise_gate = 0              # mic frames with RMS below this are silenced before
 end_silence_ms = 0           # end the phrase after this much quiet following speech (0 = Vosk default; the demo uses 700)
 stt_engine = "vosk"          # "vosk" | "whisper" (faster-whisper on CPU; model folder `whisper_model`; phrase ends via end_silence_ms)
 whisper_model = "whisper-base.en"  # folder in baselines/lumo/models/stt
-mic_device = ""             # sounddevice input device (name part or index as text); "" = system default
+llm_backend = "gpt4all"     # "gpt4all" | "llama_cpp" (llama-cpp-python: needed for Gemma 3, which gpt4all cannot load)
+llm_model = "orca-mini-3b-gguf2-q4_0.gguf"  # file in baselines/lumo/models/llm; the demo uses "gemma-3-1b-it-Q4_0.gguf" (722 MB) with llama_cpp
+mic_device = ""           # sounddevice input device (name part or index as text); "" = system default
