@@ -16,7 +16,7 @@ Write-Host "Lumo at $(git -C 'baselines\lumo' rev-parse HEAD)"
 # --- B1 environment: venv inside the Lumo folder, exact versions from the lock file ---
 # Only vosk/gpt4all/sounddevice/numpy are needed for English voice mode (torch/transformers are Bangla-only).
 if (-not (Test-Path "baselines\lumo\.venv")) {
-    py -3.13 -m venv "baselines\lumo\.venv"   # use "py -3.11" if 3.11 is installed on the target laptop
+    py -3.11 -m venv "baselines\lumo\.venv"   # use "py -3.11" if 3.11 is installed on the target laptop
 }
 & "baselines\lumo\.venv\Scripts\python.exe" -m pip install --quiet -r "scripts\lumo_requirements.lock.txt"
 Copy-Item "scripts\lumo_requirements.lock.txt" "baselines\lumo\requirements.lock.txt" -Force
