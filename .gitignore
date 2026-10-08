@@ -1,0 +1,23 @@
+# Models and binaries (downloaded by scripts/download_models.ps1)
+models/
+*.gguf
+*.onnx
+*.bin
+*.exe
+
+# Audio (tiny approved test files may be re-added with `git add -f`)
+*.wav
+
+# Virtual environments
+.venv*/
+**/.venv*/
+
+# Baselines cloned by scripts/setup.ps1
+baselines/lumo/
+
+# Raw benchmark output (tables and plots in results/ are committed)
+results/raw/
+
+# Python
+__pycache__/
+*.pyc
