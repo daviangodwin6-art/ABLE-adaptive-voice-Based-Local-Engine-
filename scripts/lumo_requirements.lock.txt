@@ -1,0 +1,15 @@
+certifi==2026.7.22
+cffi==2.1.1
+charset-normalizer==3.5.2
+colorama==0.4.6
+gpt4all==2.8.2
+idna==3.20
+numpy==2.5.3
+pycparser==3.0
+requests==2.34.2
+sounddevice==0.5.6
+srt==3.5.3
+tqdm==4.70.1
+urllib3==2.8.0
+vosk==0.3.45
+websockets==17.2
