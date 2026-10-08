@@ -34,3 +34,7 @@ Run from `baselines/lumo` with `set CUDA_VISIBLE_DEVICES=-1`, `set PYTHONUTF8=1`
 - Lumo's scripts print emoji; with piped stdout Windows uses cp1252 and crashes (`UnicodeEncodeError`). Fix without editing Lumo: `PYTHONUTF8=1`. (`python -I` ignores that variable; don't use `-I` for Lumo scripts.)
 - `curl.exe` progress output floods logs when run in the background; harmless.
 - Lumo tests use relative paths: always run them from `baselines/lumo`.
+- `tests/test_stt.py` (live mic, 30 s): works but accuracy is poor with the laptop mic array ("tell me a joke" -> "and me a joke"; some sentences produced nothing).
+- `main.py` voice mode (90 s, `timeout 90`): OK. Greeting spoken; "what are you doing" and "what" answered by voice. GPU not sampled during this run (sampler race); CUDA disabled via env.
+- Gotcha: in bash, `cd x && (...) &` backgrounds the cd too. Put `cd` on its own line before background jobs.
+- Lumo timings (dev laptop, on battery): see `results/lumo_dev_timings.md`. Median end-of-speech to first audio about 10.7 s; first LLM token about 6.6 s looks slow, re-run plugged in.
