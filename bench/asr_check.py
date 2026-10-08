@@ -18,7 +18,11 @@ PHRASES = ["where is the library", "where are my keys", "where can I buy bread",
            "is there a bank nearby", "is there a pharmacy near here"]  # statements "there is ..." would be rewritten: known cost of fix_asr
 
 SetLogLevel(-1)
-model = Model(str(LUMO / "models/stt/vosk-model-small-en-us-0.15"))
+import time
+MODEL = sys.argv[1] if len(sys.argv) > 1 else "vosk-model-small-en-us-0.15"  # or vosk-model-en-us-0.22-lgraph
+t0 = time.perf_counter()
+model = Model(str(LUMO / "models/stt" / MODEL))
+print(f"{MODEL}: loaded in {time.perf_counter() - t0:.1f} s")
 bad = 0
 with tempfile.TemporaryDirectory() as tmp:
     for p in PHRASES:

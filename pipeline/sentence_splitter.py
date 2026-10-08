@@ -63,3 +63,12 @@ class SentenceSplitter:
 def split_sentences(text, max_first_chunk_words=12):
     s = SentenceSplitter(max_first_chunk_words)
     return s.feed(text) + s.flush()
+
+
+def trim_to_sentence(text):
+    """A reply cut off by max_tokens ends mid-sentence: drop the unfinished tail. Unchanged if it ends in . ! ? or has no sentence end."""
+    text = text.strip()
+    if re.search(r"[.!?][\"')\]]*$", text):
+        return text
+    ends = list(_END.finditer(text + " "))
+    return text[:ends[-1].end()].strip() if ends else text

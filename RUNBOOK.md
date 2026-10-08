@@ -61,6 +61,7 @@ Run from `baselines/lumo` with `set CUDA_VISIBLE_DEVICES=-1`, `set PYTHONUTF8=1`
 ## Demo page (live view in a browser)
 - Once (needs internet, 4.7 MB, React 18.3.1 from the npm registry): `cd demo ; npm install`
 - Run from the project root: `.\baselines\lumo\.venv\Scripts\python.exe demo\web_demo.py` then open `http://localhost:8765` and press **Start ABLE** (the voice loop only starts on the button). Say "exit" to stop the loop (the button returns), Ctrl+C to quit the server.
+- Speech recognizer: the demo now uses the small model `vosk-model-small-en-us-0.15` (the larger `vosk-model-en-us-0.22-lgraph` is still installed; set `stt_model` in the demo tuning to use it) (130.6 MB zip from alphacephei.com, in `models/_downloads/`, unpacked to `baselines/lumo/models/stt/`); setting `stt_model` in `config/pipeline.toml` (default: the small model). Compare on your voice: `bench\mic_check.py` (edit the model name inside) or `bench\asr_check.py <model folder>`.
 - The demo applies the tuned E1 + E2 + E3 settings by default (stream on). A non-empty `JARVIS_TUNING` overrides them; `pipeline.toml` keeps the v0 defaults for benchmarks.
 - It runs `jarvis_v1.py` unchanged (real mic and speakers) with the settings in `config/pipeline.toml` (the slow v0 defaults). Do not run it during a benchmark: it uses the same CPU cores.
 - Tuned version (E1 + E2 + streaming) without editing the config, PowerShell, same terminal: `$env:JARVIS_TUNING='{"n_batch":128,"n_threads":5,"history_turns":3,"max_tokens":60,"prompt_style":"short","stream":true}'` then the run command. Back to the original: `$env:JARVIS_TUNING=''`.
@@ -75,3 +76,15 @@ Run from `baselines/lumo` with `set CUDA_VISIBLE_DEVICES=-1`, `set PYTHONUTF8=1`
 
 ## Step A notes
 - Problem solved: harness `--out` was relative and the harness does `chdir` into baselines/lumo, so a `results/` folder appeared inside Lumo. Fixed by resolving the path first; stray folder deleted.
+
+## Test with a recording (no microphone)
+- Once: `baselines\lumo\.venv\Scripts\pip install miniaudio` (pinned in `scripts/lumo_requirements.lock.txt`; decodes mp3/wav/flac/ogg, no ffmpeg).
+- CLI: `.\baselines\lumo\.venv\Scripts\python.exe bench\audio_test.py recording.mp3` prints `You:` / `ABLE:` lines; `--tuning '{...}'` overrides the demo settings (e.g. compare the two Vosk models on the same file).
+- Demo page: "Test with an audio file" next to Start ABLE (upload is saved as `results/raw/test_upload.<ext>`, max 20 MB). The loop plays the file in real time, answers, then stops by itself.
+- Mechanism: env `JARVIS_TEST_FILE` makes `jarvis_v1.py` use `FileStream` instead of the microphone and skip the greeting. Unset = normal live mode.
+
+## Whisper speech recognition (stt_engine)
+- `stt_engine = "whisper"` (the demo and `bench/audio_test.py` default) uses faster-whisper `base.en`, int8, CPU; `"vosk"` keeps the old recognizer. Model `whisper-base.en` (141 MB, Systran/faster-whisper-base.en from Hugging Face) is in `baselines/lumo/models/stt/`; packages `faster-whisper` etc. are in the Lumo venv and `scripts/lumo_requirements.lock.txt`.
+- Whisper is not streaming: our own end-of-speech detection (`end_silence_ms`, 700 ms default) cuts the phrase, which is then transcribed in one go (Whisper's built-in Silero VAD removes silence inside it). Text is lowercased and stripped of punctuation so exit/greeting matching behaves as with Vosk; `min_conf` uses exp(avg_logprob) of the segments.
+- Problem solved: the background-level estimate started at the first audio block; a recording that starts with speech was never detected. It now starts at a typical quiet level (60).
+- Check: `bench\audio_test.py bench\test_audio\snap_q1.wav` ... all five snapshot questions are heard correctly with Whisper.

@@ -54,6 +54,14 @@ def test_only_the_first_chunk_is_cut_early():
     assert split_sentences(text) == ["Hi.", LONG]
 
 
+def test_trim_to_sentence():
+    from sentence_splitter import trim_to_sentence
+    assert trim_to_sentence("Paris is big. It has the Eiffel and") == "Paris is big."
+    assert trim_to_sentence("Done. Really?") == "Done. Really?"
+    assert trim_to_sentence("Only a fragment without end") == "Only a fragment without end"
+    assert trim_to_sentence('He said "stop." Then it') == 'He said "stop."'
+
+
 if __name__ == "__main__":
     for name, fn in list(globals().items()):
         if name.startswith("test_"):

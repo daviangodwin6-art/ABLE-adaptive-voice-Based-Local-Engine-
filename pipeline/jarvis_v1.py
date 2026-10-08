@@ -5,20 +5,21 @@ pinned commit 778ed055033ec3b0410349a82b9ea68e9546a4e0. Credit and thanks to the
 
 A copy of pipeline/jarvis_v0.py (the frozen reference). With every toggle at its v0 default this file
 behaves exactly like v0; every ablation row is a config change on THIS file, not a new copy.
-Toggles: n_batch, n_threads, max_tokens, history_turns, prompt_style, stream, max_first_chunk_words, length_scale.
+Toggles: n_batch, n_threads, max_tokens, history_turns, prompt_style, stream, max_first_chunk_words, length_scale, stt_model.
 The bench overrides single toggles with the JARVIS_TUNING env variable (JSON object).
 
 Run with Lumo's venv:  baselines\\lumo\\.venv\\Scripts\\python.exe pipeline\\jarvis_v1.py
 """
 import sounddevice as sd
-import queue, json, subprocess, time, winsound, os, tomllib, sys, threading
+import numpy as np
+import collections, queue, json, subprocess, time, winsound, os, tomllib, sys, threading
 from pathlib import Path
 from vosk import Model, KaldiRecognizer
 from gpt4all import GPT4All
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sentence_splitter import SentenceSplitter
-from asr_fix import fix_asr
+from sentence_splitter import SentenceSplitter, trim_to_sentence
+from asr_fix import fix_asr, is_exit, cut_role_echo, stop_at_role_echo, is_confident
 
 # The bench passes in a function to timestamp events; in normal use it does nothing.
 timing_event = globals().get("timing_event") or (lambda name, **kw: None)
@@ -36,9 +37,11 @@ for _k, _v in _tuning.items():
     if type(_v) is not type(PIPE[_k]):
         raise SystemExit(f"Pipeline setting {_k!r} must be {type(PIPE[_k]).__name__}, got {_v!r}")
 PIPE.update(_tuning)
-_KEYS = {"n_batch", "n_threads", "max_tokens", "history_turns", "prompt_style", "stream", "max_first_chunk_words", "length_scale"}
+_KEYS = {"n_batch", "n_threads", "max_tokens", "history_turns", "prompt_style", "stream", "max_first_chunk_words", "length_scale", "stt_model", "min_conf", "noise_gate", "mic_device", "end_silence_ms", "stt_engine", "whisper_model"}
 if set(PIPE) != _KEYS:
     raise SystemExit(f"config/pipeline.toml: unknown or missing keys: {sorted(set(PIPE) ^ _KEYS)}")
+if PIPE["stt_engine"] not in ("vosk", "whisper"):
+    raise SystemExit(f"stt_engine must be 'vosk' or 'whisper', got {PIPE['stt_engine']!r}")
 if PIPE["prompt_style"] not in ("v0", "short", "tiny"):
     raise SystemExit(f"prompt_style must be 'v0', 'short' or 'tiny', got {PIPE['prompt_style']!r}")
 
@@ -48,11 +51,35 @@ is_speaking = False  # Flag to prevent feedback loop
 
 def audio_callback(indata, frames, time_info, status):
     if not is_speaking:  # Only capture audio when not speaking
-        audio_q.put(bytes(indata))
+        data = bytes(indata)
+        if PIPE["noise_gate"] and np.sqrt(np.mean(np.frombuffer(data, np.int16).astype(np.float64) ** 2)) < PIPE["noise_gate"]:
+            data = bytes(len(data))  # silence, not dropped: the recognizer needs the pauses to end a phrase
+        audio_q.put(data)
 
 # STT
-model = Model(str(LUMO / "models/stt/vosk-model-small-en-us-0.15"))
-rec = KaldiRecognizer(model, RATE)
+WHISPER = PIPE["stt_engine"] == "whisper"
+if WHISPER:
+    # Whisper (faster-whisper, CTranslate2, int8, CPU): transcribes a whole phrase after our end-of-speech detection.
+    from faster_whisper import WhisperModel
+    import math, re
+    wmodel = WhisperModel(str(LUMO / "models/stt" / PIPE["whisper_model"]), device="cpu", compute_type="int8",
+                          cpu_threads=PIPE["n_threads"])
+
+    def whisper_transcribe(pcm):
+        """-> Vosk-shaped result: lowercase text without punctuation (exit/greeting matching), per-segment confidence."""
+        audio = np.frombuffer(pcm, np.int16).astype(np.float32) / 32768
+        segs, _ = wmodel.transcribe(audio, language="en", beam_size=1, vad_filter=True, condition_on_previous_text=False)
+        segs = [s for s in segs if s.no_speech_prob < 0.6]
+        text = re.sub(r"[^\w\s']", "", " ".join(s.text for s in segs)).lower().strip()
+        return {"text": " ".join(text.split()), "result": [{"conf": math.exp(s.avg_logprob)} for s in segs]}
+
+    class _NoRec:  # speak() resets the recognizer; Whisper keeps no state between phrases
+        def Reset(self): pass
+    rec = _NoRec()
+else:
+    model = Model(str(LUMO / "models/stt" / PIPE["stt_model"]))
+    rec = KaldiRecognizer(model, RATE)
+    rec.SetWords(True)  # word confidences for min_conf
 
 # LLM - using local GGUF model for offline operation
 llm = GPT4All(
@@ -153,7 +180,10 @@ def speak_streaming(tokens):
         except Exception as e:
             print(f"[!] LLM worker failed: {e!r}")
         finally:
-            for sentence in splitter.flush():  # also covers a reply cut off by max_tokens
+            tail = splitter.flush()  # also covers a reply cut off by max_tokens
+            if splitter.emitted > 1 and tail and tail[-1].rstrip("\"')]")[-1:] not in (".", "!", "?"):
+                tail.pop()  # unfinished last sentence of a cut-off reply: do not speak half of it
+            for sentence in tail:
                 timing_event("sentence")
                 sentences.put(sentence)
             sentences.put(END)
@@ -207,39 +237,101 @@ def speak_streaming(tokens):
                 pass
         rec.Reset()
         is_speaking = False
-    return "".join(parts).strip()
+    return trim_to_sentence("".join(parts))
 
 print(f"[*] {CFG['name']} is starting...")
 print(f"🤖 {GREETING_MESSAGE}")
 
-# Speak the startup greeting
-speak(GREETING_MESSAGE)
+TEST_FILE = os.environ.get("JARVIS_TEST_FILE")  # test mode: a recording replaces the microphone (demo page "Test with an audio file", bench/audio_test.py)
+test_done = threading.Event()
+
+class FileStream:
+    """Stands in for sd.RawInputStream: plays a recording into audio_q in real time, then silence, like a live mic.
+    Audio that arrives while ABLE speaks is dropped, exactly as the real callback does."""
+    def __init__(self, path):
+        from audio_file import load_pcm16k
+        self.pcm = load_pcm16k(path) + bytes(RATE * 2 * 3)  # 3 s of silence at the end lets the last phrase finish
+    def __enter__(self):
+        def feed():
+            step = 3200 * 2  # 0.2 s, like the live blocksize
+            for i in range(0, len(self.pcm), step):
+                if not is_speaking:
+                    audio_q.put(self.pcm[i:i + step])
+                time.sleep(0.2)
+            test_done.set()
+        threading.Thread(target=feed, daemon=True).start()
+        return self
+    def __exit__(self, *a):
+        return False
+
+if not TEST_FILE:
+    # Speak the startup greeting
+    speak(GREETING_MESSAGE)
 
 print(f"[*] {CFG['name']} is listening... (say 'exit' or 'quit' to stop)")
 
-with sd.RawInputStream(
-    samplerate=RATE, blocksize=8000,
-    dtype='int16', channels=1, callback=audio_callback
-):
+floor, voiced, quiet_ms = 60.0, False, 0
+utter, prebuf = [], collections.deque(maxlen=3)
+with (FileStream(TEST_FILE) if TEST_FILE else sd.RawInputStream(
+    samplerate=RATE, blocksize=3200,  # 0.2 s: fine enough for our own end-of-speech detection
+    dtype='int16', channels=1, callback=audio_callback,
+    device=PIPE["mic_device"] or None
+)):
     while True:
         if is_speaking:
             time.sleep(0.1)
+            voiced, quiet_ms = False, 0
             continue
 
-        data = audio_q.get()
-        if rec.AcceptWaveform(data):
+        try:
+            data = audio_q.get(timeout=0.5)
+        except queue.Empty:
+            if test_done.is_set():
+                print("[*] Test recording finished.")
+                break
+            continue
+        # Own end-of-speech detection: Vosk waits too long for silence in a noisy room and merges two questions.
+        level = float(np.sqrt(np.mean(np.frombuffer(data, np.int16).astype(np.float64) ** 2)))
+        floor = min(level, floor * 1.02 + 0.5)  # background level: follows the quietest recent block (starts at a typical quiet room, not at the first block, which may already be speech)
+        if level > floor * 2.5 + 50:
+            if WHISPER and not voiced:
+                utter = list(prebuf)  # keep the 0.6 s before the first loud block: speech starts softly
+            voiced, quiet_ms = True, 0
+        elif voiced:
+            quiet_ms += len(data) // 32  # 16 kHz int16 = 32 bytes per ms
+        if WHISPER:
+            if not voiced:
+                prebuf.append(data)
+                continue
+            utter.append(data)
+            if quiet_ms < (PIPE["end_silence_ms"] or 700) and len(utter) < 100:  # 100 blocks = 20 s cap
+                continue
+            result = whisper_transcribe(b"".join(utter))
+            voiced, quiet_ms, utter = False, 0, []
+            prebuf.clear()
+        elif rec.AcceptWaveform(data):
             result = json.loads(rec.Result())
+            voiced, quiet_ms = False, 0
+        elif PIPE["end_silence_ms"] and voiced and quiet_ms >= PIPE["end_silence_ms"]:
+            result = json.loads(rec.FinalResult())
+            rec.Reset()
+            voiced, quiet_ms = False, 0
+        else:
+            continue
+        if True:
             text = fix_asr(result.get("text", "").strip())
 
-            if not text:
+            if not text or not is_confident(result, PIPE["min_conf"]):
                 continue
+            if WHISPER:
+                timing_event("heard", text=text)  # the demo page lists the turn (Vosk is hooked in web_demo.py instead)
 
             # Skip if the text is too short (likely noise)
             if len(text) < 3:
                 continue
 
             # Exit command
-            if text.lower() in EXIT_WORDS:
+            if is_exit(text, EXIT_WORDS):
                 print("Goodbye!")
                 break
 
@@ -262,7 +354,7 @@ with sd.RawInputStream(
                         context = "\n".join(conversation_history[-3:])
                     else:
                         context = conversation_history[-1]
-                    prompt = f"""You are {CFG['name']}. Answer in one short sentence.
+                    prompt = f"""You are {CFG['name']}, a helpful voice assistant. Reply in one short sentence.
 {context}
 {CFG['name']}:"""
                 elif PIPE["prompt_style"] == "short":
@@ -278,14 +370,14 @@ Answer the user's question directly and helpfully. Be concise (under 50 words).
 {CFG['name']}:"""
 
                 if PIPE["stream"]:
-                    reply = speak_streaming(llm.generate(
-                        prompt, max_tokens=PIPE["max_tokens"], n_batch=PIPE["n_batch"], streaming=True))
+                    reply = speak_streaming(stop_at_role_echo(llm.generate(
+                        prompt, max_tokens=PIPE["max_tokens"], n_batch=PIPE["n_batch"], streaming=True), CFG["name"]))
                     conversation_history.append(f"{CFG['name']}: {reply}")
                     print(f"{CFG['name']}: {reply}")
                     continue
 
                 reply = llm.generate(prompt, max_tokens=PIPE["max_tokens"], n_batch=PIPE["n_batch"])
-                reply = reply.strip()
+                reply = trim_to_sentence(cut_role_echo(reply.strip(), CFG["name"]))
 
                 # Store response in history
                 conversation_history.append(f"{CFG['name']}: {reply}")

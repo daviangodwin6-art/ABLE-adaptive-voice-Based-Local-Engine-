@@ -14,13 +14,15 @@ import json, subprocess, sys, threading, time
 # E1 + E2 + E3 winners (results/ablation.md). The demo uses them unless JARVIS_TUNING is set to something non-empty; pipeline.toml keeps the v0 defaults.
 if not os.environ.get("JARVIS_TUNING"):
     os.environ["JARVIS_TUNING"] = json.dumps({"n_batch": 128, "n_threads": 5, "history_turns": 3,
-                                              "max_tokens": 60, "prompt_style": "tiny", "stream": True, "length_scale": 0.88})
+                                              "max_tokens": 100, "min_conf": 0.5, "end_silence_ms": 700, "prompt_style": "tiny", "stream": True, "length_scale": 0.88,
+                                              "stt_model": "vosk-model-small-en-us-0.15",
+                                              "stt_engine": "whisper", "whisper_model": "whisper-base.en"})
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "pipeline"))
-from asr_fix import fix_asr
+from asr_fix import fix_asr, cut_role_echo, is_confident
 TARGET = ROOT / "pipeline" / "jarvis_v1.py"
 PORT = 8765
 
@@ -45,6 +47,14 @@ def since_turn():
     return round((time.perf_counter() - S["turns"][-1]["t"]) * 1000)
 
 
+def heard_event(name, **kw):
+    """Whisper engine: jarvis_v1 reports the recognised phrase here (Vosk is hooked in install())."""
+    if name == "heard":
+        with lock:
+            S["turns"].append({"heard": kw["text"], "reply": "", "t": time.perf_counter()})
+            S["on"] = {READ}
+
+
 def start():
     """Run the voice loop in a thread (button on the page). False if it is already running."""
     with lock:
@@ -53,7 +63,7 @@ def start():
         S["running"] = True
         S["on"] = set()
         g.clear()
-        g.update({"__name__": "__main__", "__file__": str(TARGET)})
+        g.update({"__name__": "__main__", "__file__": str(TARGET), "timing_event": heard_event})
 
     def go():
         try:
@@ -70,9 +80,15 @@ def install():
     import vosk
     class KR(vosk.KaldiRecognizer):
         def Result(self):
-            r = super().Result()
-            text = fix_asr(json.loads(r).get("text", "").strip())
-            if len(text) >= 3:  # same noise filter as the loop
+            return self._shown(super().Result())
+
+        def FinalResult(self):
+            return self._shown(super().FinalResult())
+
+        def _shown(self, r):
+            res = json.loads(r)
+            text = fix_asr(res.get("text", "").strip())
+            if len(text) >= 3 and is_confident(res, g.get("PIPE", {}).get("min_conf", 0.0)):  # same noise filter as the loop
                 with lock:
                     S["turns"].append({"heard": text, "reply": "", "t": time.perf_counter()})
                     S["on"] = {READ}
@@ -85,9 +101,10 @@ def install():
         n = [0]
         def cb(token_id, response):
             n[0] += 1
-            mark(on=[WRITE], off=[READ], first={"first_token_ms": since_turn()}, tokens=n[0],
-                 reply=S["turns"][-1]["reply"] + response)
-            return True
+            text = S["turns"][-1]["reply"] + response
+            cut = cut_role_echo(text, g.get("CFG", {}).get("name", "ABLE"))
+            mark(on=[WRITE], off=[READ], first={"first_token_ms": since_turn()}, tokens=n[0], reply=cut)
+            return cut == text  # False stops the LLM when it starts writing the next "User:" line
         out = orig_gen(self, prompt, callback=cb, **k)
         if isinstance(out, str):
             mark(off=[READ, WRITE])
@@ -104,6 +121,8 @@ def install():
             return orig_run(cmd, *a, **k)
         t0 = time.perf_counter()
         fields = {} if S["turns"][-1]["reply"] else {"reply": str(cmd).split(" | ")[0][5:]}  # fixed greeting: no LLM
+        if fields:
+            S["turns"][-1]["t"] = t0  # greeting: time from now, not from server start / model loading
         mark(on=[VOICE], off=[READ], first={"tts_start_ms": since_turn()}, **fields)
         r = orig_run(cmd, *a, **k)
         mark(off=[VOICE], first={"tts_ms": round((time.perf_counter() - t0) * 1000)})
@@ -147,7 +166,7 @@ function Turn({t}){
     h("div",{className:"dim"},"You: "+t.heard),
     h("div",null,"ABLE: "+t.reply),
     t.first_audio_ms&&h("div",{className:"bar"},
-      [[ft,"b1"],[ts-ft,"b2"],[tts,"b3"]].map(([w,c])=>h("div",{key:c,className:c,style:{flex:Math.max(w,0)}}))),
+      (ft?[[ft,"b1"],[ts-ft,"b2"],[tts,"b3"]]:[[tts,"b3"]]).map(([w,c])=>h("div",{key:c,className:c,style:{flex:Math.max(w,0)}}))),
     t.first_audio_ms&&h("div",{className:"dim"},
       (t.first_token_ms?"first word written after "+sec(ft)+", ":"")
       +"first sound after "+sec(t.first_audio_ms)
@@ -156,6 +175,8 @@ function Turn({t}){
 
 function App(){
   const [s,setS]=React.useState(null);
+  const [mode,setMode]=React.useState("mic");
+  const btn={font:"inherit",padding:"8px 18px",borderRadius:6,border:0,color:"#fff"};
   React.useEffect(()=>{
     const id=setInterval(async()=>{try{setS(await(await fetch("/state")).json())}catch(e){}},300);
     return()=>clearInterval(id);
@@ -163,11 +184,16 @@ function App(){
   if(!s)return h("p",null,"Connecting...");
   return h(React.Fragment,null,
     h("h1",null,"ABLE - offline voice assistant"),
-    h("button",{disabled:s.running,onClick:()=>fetch("/run",{method:"POST"}),
-      style:{font:"inherit",padding:"8px 18px",margin:"8px 0",borderRadius:6,border:0,background:s.running?"#333":"#2e7d32",color:"#fff",cursor:s.running?"default":"pointer"}},
-      s.running?"Running (say exit to stop)":"Start ABLE"),
+    h("div",{style:{margin:"8px 0",display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}},
+      [["mic","Mic"],["file","Recorded audio"]].map(([m,label])=>h("button",{key:m,disabled:s.running,onClick:()=>{setMode(m);if(m==="mic")fetch("/run",{method:"POST"});},
+        style:{...btn,background:s.running?"#333":mode===m?"#2e7d32":"#444",cursor:s.running?"default":"pointer"}},label)),
+      s.running&&h("span",{className:"dim"},"Running (say exit to stop)"),
+      mode==="file"&&!s.running&&h("label",{style:{...btn,background:"#1565c0",cursor:"pointer"}},"Upload audio (mp3/wav) and run",
+        h("input",{type:"file",accept:"audio/*",style:{display:"none"},onChange:async e=>{
+          const f=e.target.files[0];if(!f)return;
+          await fetch("/test",{method:"POST",headers:{"X-Filename":f.name},body:f});e.target.value="";}}))),
     s.error&&h("div",{style:{color:"#ef5350"}},"Stopped: "+s.error),
-    h("small",null,Object.entries(s.settings).map(([k,v])=>k+"="+v).join("   ")),
+    h("div",null,h("small",null,Object.entries(s.settings).map(([k,v])=>k+"="+v).join("   "))),
     h("div",{id:"stages"},STAGES.map(n=>h("span",{key:n,className:"st"+(s.on.includes(n)?" on":"")},n))),
     h("div",{className:"key dim"},"Wait until the first sound:",h("i",{className:"b1"}),"reading the prompt",
       h("i",{className:"b2"}),"writing before the voice starts",h("i",{className:"b3"}),"making the first voice clip"),
@@ -202,8 +228,25 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_POST(self):
+        if self.path == "/test":  # recorded audio instead of the microphone (pipeline/jarvis_v1.py test mode)
+            n = int(self.headers.get("Content-Length", 0))
+            ext = Path(self.headers.get("X-Filename", "a.mp3")).suffix.lower()
+            if n > 20_000_000 or ext not in (".mp3", ".wav", ".flac", ".ogg") or S.get("running"):
+                self.send_response(400)
+                self.end_headers()
+                return
+            path = ROOT / "results" / "raw" / f"test_upload{ext}"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(self.rfile.read(n))
+            S.pop("error", None)
+            os.environ["JARVIS_TEST_FILE"] = str(path)
+            start()
+            self.send_response(204)
+            self.end_headers()
+            return
         if self.path == "/run":
             S.pop("error", None)
+            os.environ.pop("JARVIS_TEST_FILE", None)  # live microphone
             start()
         self.send_response(204)
         self.end_headers()

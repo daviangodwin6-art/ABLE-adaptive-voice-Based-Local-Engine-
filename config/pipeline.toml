@@ -10,3 +10,10 @@ prompt_style = "v0"         # "v0" (Lumo's wording) | "short" | "tiny" (shortest
 stream = false              # speak sentence by sentence while the LLM is still writing (E3)
 max_first_chunk_words = 12  # stream only: cut the first chunk at a comma after this many words
 length_scale = 1.0          # Piper speech length: below 1.0 is faster (0.88 = about 14 % faster)
+stt_model = "vosk-model-small-en-us-0.15"  # folder in baselines/lumo/models/stt; "vosk-model-en-us-0.22-lgraph" hears more accurately (slower start-up, more RAM)
+min_conf = 0.0              # drop recognised phrases whose mean word confidence is below this (0 = off; the demo uses 0.5)
+noise_gate = 0              # mic frames with RMS below this are silenced before the recognizer (0 = off; int16 scale, try 150-400)
+end_silence_ms = 0           # end the phrase after this much quiet following speech (0 = Vosk default; the demo uses 700)
+stt_engine = "vosk"          # "vosk" | "whisper" (faster-whisper on CPU; model folder `whisper_model`; phrase ends via end_silence_ms)
+whisper_model = "whisper-base.en"  # folder in baselines/lumo/models/stt
+mic_device = ""             # sounddevice input device (name part or index as text); "" = system default
